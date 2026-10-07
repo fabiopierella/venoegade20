@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Overlev stueetagen</title>
+<meta name="description" content="Kan du overleve stueetagen? Spring over løver, elefanter og kæmpeedderkopper og find hjem til Venøgade 20 på Østerbro.">
+<meta property="og:title" content="Overlev stueetagen 🦁">
+<meta property="og:description" content="Spring over løver, elefanter og kæmpeedderkopper og find hjem til Venøgade 20 på Østerbro.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #eef3ea;
+  --sky: #d6e8f0;
+  --ink: #1f2a33;
+  --muted: #5b6b77;
+  --brick: #b5533c;
+  --leaf: #4f8a4b;
+  --hedge: #6fa266;
+  --tile: #b9b2a6;
+  --card: #ffffff;
+  --cloud: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121a17; --sky: #1c2b33; --ink: #eef3f7; --muted: #9fb0bd;
+    --brick: #c96a52; --leaf: #6aa865; --hedge: #3f6b3b; --tile: #5c574f;
+    --card: #1a2420; --cloud: #33475a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121a17; --sky: #1c2b33; --ink: #eef3f7; --muted: #9fb0bd;
+  --brick: #c96a52; --leaf: #6aa865; --hedge: #3f6b3b; --tile: #5c574f;
+  --card: #1a2420; --cloud: #33475a;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+main { width: 100%; max-width: 640px; padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 14px; }
+h1 { font-size: clamp(1.8rem, 8vw, 2.6rem); font-weight: 800; line-height: 1.02; margin: 0; letter-spacing: -0.02em; }
+.intro { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.45; max-width: 46ch; }
+.intro strong { color: var(--ink); }
+.stage { position: relative; width: 100%; border-radius: 18px; overflow: hidden; background: var(--sky); touch-action: none; cursor: pointer; }
+canvas { display: block; width: 100%; height: auto; }
+.hud { position: absolute; top: 10px; left: 14px; right: 14px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; pointer-events: none; }
+.overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 8px; padding: 16px; background: color-mix(in srgb, var(--sky) 76%, transparent);
+}
+.overlay[hidden] { display: none; }
+.overlay p { margin: 0; max-width: 34ch; }
+.big { font-size: clamp(1.3rem, 5.5vw, 1.8rem); font-weight: 800; }
+.small { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+.win { background: var(--card); border-radius: 18px; padding: 20px 18px; display: flex; flex-direction: column; gap: 12px; border: 2px solid var(--leaf); }
+.win[hidden] { display: none; }
+.win h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+.win p { margin: 0; line-height: 1.45; }
+.win ul { margin: 0; padding-left: 1.2em; line-height: 1.6; }
+.btn {
+  display: inline-block; text-align: center; text-decoration: none; font: inherit; font-weight: 800; font-size: 1.05rem;
+  background: var(--leaf); color: #fff; border: 0; border-radius: 12px; padding: 13px 18px; cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--muted); }
+.btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row .btn { flex: 1 1 160px; }
+.skip { color: var(--muted); font-size: 0.95rem; margin: 0; }
+.skip a { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Overlev stueetagen</h1>
+  <p class="intro">Vi var også bange for stuen. Så flyttede vi ind. <strong>Tryk</strong> for et lille hop, <strong>hold</strong> for et stort hop, og pas på det, der flyver. Klarer du 15 farer, er du hjemme.</p>
+
+  <div class="stage" id="stage" role="button" tabindex="0" aria-label="Spillet. Tryk for lille hop, hold for stort hop. Mellemrum virker også.">
+    <canvas id="c"></canvas>
+    <div class="hud"><span id="score">0 / 15</span><span id="best"></span></div>
+    <div class="overlay" id="overlay">
+      <p class="big" id="ovTitle">Tryk for at starte</p>
+      <p class="small" id="ovSub">Tryk = lille hop. Hold = stort hop. Fugtskyen skal du gå under.</p>
+    </div>
+  </div>
+
+  <section class="win" id="win" hidden>
+    <h2>Myten er aflivet! 🦁☕</h2>
+    <p>Løven ville bare have en kop kaffe, og edderkoppen var på størrelse med et riskorn. Her er det, stueetagen på Venøgade 20 faktisk byder på:</p>
+    <ul>
+      <li>Egen terrasse direkte fra stuen</li>
+      <li>Ingen trapper med barnevogn eller indkøbsposer</li>
+      <li>91 m², 3 værelser og et stort lyst køkken-alrum</li>
+      <li>Nyere byggeri fra 2007 og mulighed for parkering</li>
+    </ul>
+    <div class="row">
+      <a class="btn" href="https://www.boliga.dk/adresse/venoegade-20-st-th-2100-koebenhavn-oe-1498254477" target="_blank" rel="noopener">Se lejligheden</a>
+      <button class="btn ghost" id="again" type="button">Spil igen</button>
+    </div>
+  </section>
+
+  <p class="skip">Ikke til spil? <a href="https://www.boliga.dk/adresse/venoegade-20-st-th-2100-koebenhavn-oe-1498254477" target="_blank" rel="noopener">Se lejligheden direkte</a></p>
+</main>
+
+<script>
+(function () {
+  const W = 540, H = 240, GROUND = 200, GOAL = 15;
+  const cv = document.getElementById('c');
+  const ctx = cv.getContext('2d');
+  const stage = document.getElementById('stage');
+  const overlay = document.getElementById('overlay');
+  const ovTitle = document.getElementById('ovTitle');
+  const ovSub = document.getElementById('ovSub');
+  const scoreEl = document.getElementById('score');
+  const bestEl = document.getElementById('best');
+  const winEl = document.getElementById('win');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FONT = '"Bricolage Grotesque", system-ui, sans-serif';
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr);
+
+  let col = {};
+  function readColors() {
+    const s = getComputedStyle(document.documentElement);
+    ['sky','ink','brick','leaf','hedge','tile','cloud','muted'].forEach(k => col[k] = s.getPropertyValue('--' + k).trim());
+  }
+  readColors();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readColors(); if (state !== 'play') draw(); });
+
+  let best = 0;
+  try { best = parseInt(localStorage.getItem('stue-best') || '0', 10) || 0; } catch (e) {}
+  function showBest() { bestEl.textContent = best ? 'Rekord: ' + Math.min(best, GOAL) : ''; }
+  showBest();
+
+  // ---------- obstacle catalogue ----------
+  // lift = how far above the ground the bottom of the obstacle sits
+  const KINDS = {
+    spider:   { w: 54, h: 36, lift: 0,   label: 'Kæmpeedderkop' },
+    lion:     { w: 72, h: 46, lift: 0,   label: 'Løve' },
+    elephant: { w: 92, h: 62, lift: 0,   label: 'Elefant i stuen' },
+    ninja:    { w: 30, h: 56, lift: 0,   label: 'Indbrudstyv?' },
+    snoop:    { w: 56, h: 60, lift: 0,   label: 'Nysgerrig nabo' },
+    bounce:   { w: 28, h: 28, lift: 0,   label: 'Børnenes bold', bounce: { a: 38, f: 4.6 } },
+    lowball:  { w: 28, h: 28, lift: 24,  label: 'Fodbold!', fly: true },
+    damp:     { w: 86, h: 42, lift: 98,  label: 'Fugtsky', fly: true }
+  };
+  const DEATH = {
+    spider: 'Edderkoppen var større end i rygterne.',
+    lion: 'Løven fik dig. Den ville bare hilse.',
+    elephant: 'Elefanten i stuen. Bogstaveligt talt.',
+    ninja: 'Det var bare naboen, der ville låne sukker.',
+    snoop: 'Naboen kiggede bare forbi med kikkerten.',
+    bounce: 'Bold i hovedet! Børnene siger undskyld.',
+    lowball: 'Straffespark direkte i flyttekassen.',
+    damp: 'Du hoppede ind i fugtskyen. Den er nu kun et rygte.'
+  };
+
+  // groups: arrays of [kind, gapBefore]
+  function pickGroup(n) {
+    const singles = [['spider'], ['lion'], ['snoop'], ['ninja']];
+    if (n >= 2) singles.push(['lowball'], ['damp'], ['bounce']);
+    if (n >= 4) singles.push(['elephant']);
+    const doubles = [
+      [['spider'], ['spider', 46]],
+      [['lion'], ['bounce', 120]],
+      [['snoop'], ['spider', 40]],
+      [['damp'], ['lion', 150]],
+      [['lowball'], ['ninja', 120]],
+      [['spider'], ['damp', 130]],
+      [['ninja'], ['ninja', 52]]
+    ];
+    if (n >= 4 && Math.random() < Math.min(0.25 + n * 0.04, 0.6)) return doubles[Math.floor(Math.random() * doubles.length)];
+    return [singles[Math.floor(Math.random() * singles.length)]];
+  }
+
+  let state = 'ready';
+  let p, obs, clouds, speed, passed, spawned, nextX, house, t, last, holding, killer;
+
+  function reset() {
+    p = { x: 90, y: GROUND, vy: 0, w: 34, h: 52, onGround: true };
+    obs = []; speed = 300; passed = 0; spawned = 0; nextX = W + 60; house = null; t = 0; holding = false;
+    clouds = [0,1,2,3].map(i => ({ x: i * 210 + Math.random() * 80, y: 22 + Math.random() * 26, s: 0.45 + Math.random() * 0.3 }));
+    scoreEl.textContent = '0 / ' + GOAL;
+  }
+
+  function press() {
+    holding = true;
+    if (state === 'ready' || state === 'dead') { start(); return; }
+    if (state !== 'won' && p.onGround) { p.vy = -830; p.onGround = false; }
+  }
+  function release() {
+    holding = false;
+    if (p && !p.onGround && p.vy < -330) p.vy = -330; // short hop
+  }
+  function start() {
+    reset(); state = 'play'; overlay.hidden = true; winEl.hidden = true; holding = false;
+    last = performance.now(); requestAnimationFrame(loop);
+  }
+
+  function spawnGroup() {
+    const g = pickGroup(spawned);
+    const grp = { n: g.length, done: 0 };
+    let x = nextX;
+    g.forEach((item, i) => {
+      const k = KINDS[item[0]];
+      if (i > 0) x += item[1];
+      obs.push({ kind: item[0], x, w: k.w, h: k.h, lift: k.lift, bounce: k.bounce, ph: Math.random() * 6, grp, counted: false });
+      x += k.w;
+    });
+    spawned++;
+    nextX = x + 300 + Math.random() * 220 + speed * 0.25;
+  }
+
+  function liftOf(o) { return o.lift + (o.bounce ? Math.abs(Math.sin(t * o.bounce.f + o.ph)) * o.bounce.a : 0); }
+
+  function hit(o) {
+    const pad = 7;
+    const bottom = GROUND - liftOf(o), top = bottom - o.h;
+    const pl = p.x + pad, pr = p.x + p.w - pad, pt = p.y - p.h + pad, pb = p.y - 3;
+    return pl < o.x + o.w - pad && pr > o.x + pad && pt < bottom - 4 && pb > top + 4;
+  }
+
+  function loop(now) {
+    if (state !== 'play') return;
+    const dt = Math.min((now - last) / 1000, 0.035); last = now; t += dt;
+
+    p.vy += 2300 * dt; p.y += p.vy * dt;
+    if (p.y >= GROUND) { p.y = GROUND; p.vy = 0; p.onGround = true; }
+
+    speed = Math.min(300 + passed * 11, 450);
+    clouds.forEach(c => { c.x -= speed * 0.12 * c.s * dt; if (c.x < -120) { c.x = W + Math.random() * 100; c.y = 22 + Math.random() * 26; } });
+
+    nextX -= speed * dt;
+    if (spawned < GOAL && nextX < W + 40) spawnGroup();
+    if (spawned >= GOAL && !house && obs.length === 0) house = { x: W + 40 };
+
+    for (const o of obs) {
+      o.x -= speed * dt;
+      if (!o.counted && o.x + o.w < p.x) {
+        o.counted = true; o.grp.done++;
+        if (o.grp.done === o.grp.n) { passed++; scoreEl.textContent = passed + ' / ' + GOAL; }
+      }
+    }
+    obs = obs.filter(o => o.x + o.w > -30);
+
+    for (const o of obs) { if (hit(o)) { killer = o.kind; die(); draw(); return; } }
+
+    if (house) {
+      house.x -= speed * dt;
+      if (house.x + 100 <= p.x + p.w) { win(); draw(); return; }
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  function die() {
+    state = 'dead';
+    if (passed > best) { best = passed; try { localStorage.setItem('stue-best', String(best)); } catch (e) {} showBest(); }
+    ovTitle.textContent = 'Av! ' + passed + ' af ' + GOAL;
+    ovSub.textContent = DEATH[killer] + ' Tryk for at prøve igen.';
+    overlay.hidden = false;
+  }
+  function win() {
+    state = 'won';
+    best = GOAL; try { localStorage.setItem('stue-best', String(GOAL)); } catch (e) {} showBest();
+    ovTitle.textContent = 'Du overlevede stueetagen! 🏡';
+    ovSub.textContent = 'Se hvad der venter herunder';
+    overlay.hidden = false; winEl.hidden = false;
+    winEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+  }
+
+  // ---------- drawing ----------
+  function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+  function pent(cx, cy, r, rot) {
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) { const a = rot - Math.PI / 2 + i * 2 * Math.PI / 5; ctx[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * r, cy + Math.sin(a) * r); }
+    ctx.closePath(); ctx.fill();
+  }
+  function line(pts) { ctx.beginPath(); ctx.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1]); ctx.stroke(); }
+
+  function skyCloud(x, y, s) {
+    ctx.fillStyle = col.cloud;
+    ctx.beginPath(); ctx.arc(x, y, 18 * s, 0, 7); ctx.arc(x + 20 * s, y - 8 * s, 22 * s, 0, 7); ctx.arc(x + 44 * s, y, 17 * s, 0, 7); ctx.fill();
+  }
+
+  function person() {
+    const x = p.x, y = p.y;
+    const run = p.onGround && state === 'play' ? Math.sin(t * 22) : 0.6;
+    ctx.strokeStyle = col.ink; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x + 15, y - 18); ctx.lineTo(x + 8 + run * 8, y); ctx.moveTo(x + 17, y - 18); ctx.lineTo(x + 24 - run * 8, y); ctx.stroke();
+    ctx.fillStyle = col.ink;
+    ctx.beginPath(); ctx.roundRect(x + 8, y - 42, 18, 26, 6); ctx.fill();
+    circle(x + 17, y - 49, 8);
+    ctx.fillStyle = '#c89a5b'; ctx.fillRect(x + 18, y - 40, 22, 18);
+    ctx.strokeStyle = '#8a6532'; ctx.lineWidth = 2; ctx.strokeRect(x + 18, y - 40, 22, 18);
+    line([x + 18, y - 34, x + 40, y - 34]);
+  }
+
+  function drawObstacle(o) {
+    const x = o.x, b = GROUND - liftOf(o), k = o.kind;
+    ctx.lineCap = 'round';
+    if (k === 'spider') {
+      const wig = Math.sin(t * 18 + o.ph) * 3;
+      ctx.strokeStyle = '#222'; ctx.lineWidth = 3;
+      for (let i = 0; i < 4; i++) {
+        const lx = x + 14 + i * 9;
+        line([lx, b - 18, lx - 10, b - 30 + (i % 2 ? wig : -wig), lx - 14, b]);
+        line([lx + 4, b - 18, lx + 14, b - 30 + (i % 2 ? -wig : wig), lx + 18, b]);
+      }
+      ctx.fillStyle = '#222'; ctx.beginPath(); ctx.ellipse(x + 28, b - 18, 18, 13, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; circle(x + 20, b - 22, 4); circle(x + 29, b - 22, 4);
+      ctx.fillStyle = '#222'; circle(x + 19, b - 22, 2); circle(x + 28, b - 22, 2);
+    } else if (k === 'lion') {
+      const step = Math.sin(t * 14 + o.ph) * 4;
+      ctx.strokeStyle = '#c99a3e'; ctx.lineWidth = 6;
+      line([x + 24, b - 16, x + 22 + step, b]); line([x + 56, b - 16, x + 58 - step, b]);
+      ctx.lineWidth = 3; line([x + 66, b - 28, x + 72, b - 40]);
+      ctx.fillStyle = '#e0b552'; ctx.beginPath(); ctx.ellipse(x + 42, b - 24, 26, 13, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#b4652a'; circle(x + 16, b - 32, 16);
+      ctx.fillStyle = '#e0b552'; circle(x + 14, b - 32, 10);
+      ctx.fillStyle = '#222'; circle(x + 10, b - 34, 2); circle(x + 17, b - 34, 2);
+    } else if (k === 'elephant') {
+      const step = Math.sin(t * 10 + o.ph) * 3;
+      ctx.fillStyle = '#8f99a3';
+      ctx.fillRect(x + 30 + step, b - 22, 12, 22); ctx.fillRect(x + 70 - step, b - 22, 12, 22);
+      ctx.beginPath(); ctx.ellipse(x + 56, b - 34, 34, 22, 0, 0, 7); ctx.fill();
+      circle(x + 20, b - 42, 16);
+      ctx.strokeStyle = '#8f99a3'; ctx.lineWidth = 8; line([x + 8, b - 38, x + 4, b - 20, x + 10, b - 10]);
+      ctx.fillStyle = '#a7b0b8'; ctx.beginPath(); ctx.ellipse(x + 30, b - 44, 9, 13, 0.3, 0, 7); ctx.fill();
+      ctx.fillStyle = '#222'; circle(x + 14, b - 46, 2);
+    } else if (k === 'ninja') {
+      const step = Math.sin(t * 20 + o.ph) * 6;
+      ctx.strokeStyle = '#222'; ctx.lineWidth = 5;
+      line([x + 15, b - 18, x + 9 + step, b]); line([x + 15, b - 18, x + 21 - step, b]);
+      ctx.fillStyle = '#222'; ctx.beginPath(); ctx.roundRect(x + 6, b - 44, 18, 28, 6); ctx.fill();
+      circle(x + 15, b - 50, 9);
+      ctx.fillStyle = '#fff'; ctx.fillRect(x + 7, b - 53, 16, 5);
+      ctx.fillStyle = '#222'; circle(x + 12, b - 51, 1.5); circle(x + 18, b - 51, 1.5);
+    } else if (k === 'snoop') {
+      const peek = Math.sin(t * 4 + o.ph) * 3;
+      // shoulders and head
+      ctx.fillStyle = '#d24b3e'; ctx.beginPath(); ctx.roundRect(x + 12, b - 44 + peek, 32, 20, 8); ctx.fill();
+      ctx.fillStyle = '#f0c9a4'; circle(x + 28, b - 50 + peek, 12);
+      ctx.fillStyle = '#5a3a22'; ctx.beginPath(); ctx.arc(x + 28, b - 53 + peek, 12, Math.PI, 0); ctx.fill();
+      // binoculars
+      ctx.fillStyle = '#111'; ctx.fillRect(x + 15, b - 52 + peek, 26, 7);
+      circle(x + 19, b - 48 + peek, 6); circle(x + 37, b - 48 + peek, 6);
+      ctx.fillStyle = '#9cd0ff'; circle(x + 19, b - 48 + peek, 3); circle(x + 37, b - 48 + peek, 3);
+      // hedge in front, darker than the background hedge
+      ctx.fillStyle = '#2d5a2a'; ctx.beginPath(); ctx.roundRect(x, b - 30, o.w, 30, 8); ctx.fill();
+      ctx.fillStyle = '#3c7437'; circle(x + 10, b - 28, 9); circle(x + 28, b - 31, 10); circle(x + 46, b - 28, 9);
+    } else if (k === 'bounce' || k === 'lowball') {
+      const cx = x + 14, cy = b - 14, R = 14;
+      const rot = t * (k === 'lowball' ? -9 : -5) + o.ph;
+      if (k === 'lowball') { ctx.strokeStyle = col.ink; ctx.globalAlpha = 0.35; ctx.lineWidth = 3; line([cx + 20, cy - 6, cx + 40, cy - 6]); line([cx + 20, cy + 5, cx + 34, cy + 5]); ctx.globalAlpha = 1; }
+      ctx.fillStyle = '#fff'; circle(cx, cy, R);
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.clip();
+      ctx.fillStyle = '#222';
+      pent(cx, cy, 5.5, rot);
+      for (let i = 0; i < 5; i++) { const a = rot + Math.PI / 2 + i * 2 * Math.PI / 5; pent(cx + Math.cos(a) * 14, cy + Math.sin(a) * 14, 5, a); }
+      ctx.strokeStyle = '#222'; ctx.lineWidth = 1.5;
+      for (let i = 0; i < 5; i++) { const a = rot + Math.PI / 2 + i * 2 * Math.PI / 5; line([cx + Math.cos(a) * 5.5, cy + Math.sin(a) * 5.5, cx + Math.cos(a) * 10, cy + Math.sin(a) * 10]); }
+      ctx.restore();
+      ctx.strokeStyle = '#222'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+    } else if (k === 'damp') {
+      const bob = Math.sin(t * 3 + o.ph) * 4;
+      ctx.fillStyle = '#8fa6b5';
+      ctx.beginPath(); ctx.arc(x + 22, b - 20 + bob, 18, 0, 7); ctx.arc(x + 44, b - 28 + bob, 22, 0, 7); ctx.arc(x + 66, b - 19 + bob, 17, 0, 7); ctx.fill();
+      ctx.fillStyle = '#5d87a8';
+      for (let i = 0; i < 4; i++) {
+        const dy = ((t * 70 + i * 17) % 34);
+        circle(x + 18 + i * 17, b + 2 + dy + bob, 2.5);
+      }
+      ctx.fillStyle = '#222'; circle(x + 36, b - 26 + bob, 2); circle(x + 50, b - 26 + bob, 2);
+      ctx.strokeStyle = '#222'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + 43, b - 15 + bob, 5, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+    }
+  }
+
+  function building(x) {
+    const g = GROUND, w = 220, h = 190;
+    ctx.fillStyle = col.brick; ctx.fillRect(x, g - h, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+      if (r === 2 && c < 2) continue;
+      ctx.fillRect(x + 18 + c * 50, g - h + 18 + r * 50, 30, 32);
+    }
+    ctx.fillStyle = col.ink; ctx.fillRect(x + 30, g - 58, 36, 58);
+    ctx.fillStyle = '#ffd34d'; circle(x + 59, g - 30, 3);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(x + 24, g - 86, 48, 20, 4); ctx.fill();
+    ctx.fillStyle = col.ink; ctx.font = '800 13px ' + FONT; ctx.textAlign = 'center';
+    ctx.fillText('20 st.th.', x + 48, g - 71);
+    // terrace with a happy lion having coffee
+    ctx.fillStyle = col.leaf; [x + 120, x + 206].forEach(px => circle(px, g - 14, 13));
+    ctx.fillStyle = '#b4652a'; circle(x + 160, g - 34, 13);
+    ctx.fillStyle = '#e0b552'; circle(x + 160, g - 34, 8); ctx.beginPath(); ctx.ellipse(x + 162, g - 12, 16, 12, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#222'; circle(x + 157, g - 36, 1.5); circle(x + 163, g - 36, 1.5);
+    ctx.fillStyle = '#fff'; ctx.fillRect(x + 176, g - 22, 10, 10);
+    ctx.fillStyle = col.ink; ctx.font = '700 12px ' + FONT; ctx.fillText('☕', x + 181, g - 26);
+  }
+
+  function draw() {
+    ctx.fillStyle = col.sky; ctx.fillRect(0, 0, W, H);
+    clouds.forEach(c => skyCloud(c.x, c.y, c.s));
+    // hedge in the background
+    ctx.fillStyle = col.hedge; ctx.globalAlpha = 0.55;
+    const off = (t * speed * 0.35) % 34;
+    for (let i = -1; i < W / 34 + 2; i++) circle(i * 34 - off, GROUND - 18, 18);
+    ctx.fillRect(0, GROUND - 18, W, 18);
+    ctx.globalAlpha = 1;
+    if (house) building(house.x);
+    // terrace tiles
+    ctx.fillStyle = col.tile; ctx.fillRect(0, GROUND, W, H - GROUND);
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 2;
+    const toff = (t * speed) % 48;
+    for (let i = -1; i < W / 48 + 2; i++) line([i * 48 - toff, GROUND, i * 48 - toff - 20, H]);
+    line([0, GROUND + 30, W, GROUND + 30]);
+    obs.forEach(drawObstacle);
+    person();
+  }
+
+  // ---------- input ----------
+  stage.addEventListener('pointerdown', e => { e.preventDefault(); press(); });
+  window.addEventListener('pointerup', release);
+  window.addEventListener('pointercancel', release);
+  window.addEventListener('keydown', e => {
+    if ((e.code === 'Space' || e.code === 'ArrowUp') && !e.repeat) { e.preventDefault(); press(); }
+  });
+  window.addEventListener('keyup', e => { if (e.code === 'Space' || e.code === 'ArrowUp') release(); });
+  document.getElementById('again').addEventListener('click', start);
+
+  reset(); draw();
+})();
+</script>
+</body>
+</html>
