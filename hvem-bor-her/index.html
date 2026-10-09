@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hvem bor her? Venøgade 20, st. th.</title>
+<meta name="description" content="Se hvordan Venøgade 20, st. th. kan indrettes til fire forskellige familier, og flyt selv rundt på møblerne. Alle møbler er i rigtige mål.">
+<meta property="og:title" content="Hvem bor her? 🛋️">
+<meta property="og:description" content="Fire familier, én lejlighed på Østerbro. Se indretningen og flyt selv rundt på møblerne.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://fabiopierella.github.io/venoegade20/hvem-bor-her/preview.png">
+<meta property="og:url" content="https://fabiopierella.github.io/venoegade20/hvem-bor-her/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #eef1f4;
+  --paper: #ffffff;
+  --ink: #1e2a44;
+  --muted: #5d6879;
+  --line: #d3d9e1;
+  --floor: #ece0c8;
+  --floor-wet: #dfe7ec;
+  --deck: #c9a87a;
+  --wall: #24262b;
+  --fixed: #c8ced6;
+  --furn: #ffffff;
+  --furn-line: #39404d;
+  --glass: #8cc4e8;
+  --warn: #d23c3c;
+  --accent: #2f6fd6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161d; --paper: #1a2029; --ink: #e8edf4; --muted: #9aa6b6; --line: #2d3642;
+    --floor: #4a4234; --floor-wet: #2f3a42; --deck: #6b5638; --wall: #d9dde3; --fixed: #59626f;
+    --furn: #2a313c; --furn-line: #cfd6df; --glass: #4f8fb8; --warn: #ff6b6b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161d; --paper: #1a2029; --ink: #e8edf4; --muted: #9aa6b6; --line: #2d3642;
+  --floor: #4a4234; --floor-wet: #2f3a42; --deck: #6b5638; --wall: #d9dde3; --fixed: #59626f;
+  --furn: #2a313c; --furn-line: #cfd6df; --glass: #4f8fb8; --warn: #ff6b6b;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.45;
+}
+main { max-width: 980px; margin: 0 auto; padding: 22px 16px 32px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: clamp(2rem, 8vw, 3.4rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin: 0; }
+.lede { margin: 0; color: var(--muted); max-width: 60ch; }
+
+.people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 640px) { .people { grid-template-columns: repeat(2, 1fr); } }
+.person {
+  font: inherit; color: var(--ink); background: var(--paper); border: 2px solid var(--line);
+  border-radius: 14px; padding: 10px 12px; text-align: left; cursor: pointer; display: flex; gap: 10px; align-items: center;
+}
+.person .emo { font-size: 1.6rem; line-height: 1; }
+.person .nm { font-weight: 800; font-size: 0.98rem; line-height: 1.15; }
+.person[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.person:focus-visible, .btn:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.story { margin: 0; font-size: 1.08rem; max-width: 62ch; min-height: 3em; }
+
+.planwrap { background: var(--paper); border-radius: 18px; padding: 10px; position: relative; }
+svg#plan { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.item { cursor: grab; touch-action: none; }
+.item.dragging { cursor: grabbing; }
+.item.sel .hit { stroke: var(--accent); stroke-width: 5; stroke-dasharray: 10 6; }
+.item.bad .hit { stroke: var(--warn); stroke-width: 6; stroke-dasharray: none; }
+.fade { animation: fade .35s ease-out; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .fade { animation: none; } }
+
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 48px;
+  background: var(--paper); border-radius: 14px; padding: 8px 10px;
+}
+.toolbar .info { flex: 1 1 180px; font-weight: 600; }
+.toolbar .info small { display: block; color: var(--muted); font-weight: 400; }
+.toolbar .info .warn { color: var(--warn); }
+.btn {
+  font: inherit; font-weight: 800; border-radius: 10px; padding: 10px 14px; cursor: pointer;
+  background: var(--paper); color: var(--ink); border: 2px solid var(--line); text-decoration: none; display: inline-block; text-align: center;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn[disabled] { opacity: .45; cursor: default; }
+
+details.build { background: var(--paper); border-radius: 14px; padding: 12px 14px; }
+details.build summary { font-weight: 800; cursor: pointer; }
+.addrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.addrow label { color: var(--muted); font-size: .95rem; }
+select, input[type=number] {
+  font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px;
+}
+input[type=number] { width: 5.5em; }
+
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.cta .btn { flex: 1 1 220px; padding: 14px 16px; font-size: 1.05rem; }
+.fine { color: var(--muted); font-size: .9rem; margin: 0; }
+.fine a { color: var(--ink); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hvem bor her?</h1>
+  <p class="lede">Venøgade 20, st. th. er 91 m² med tre værelser og egen terrasse. Vælg en familie og se, hvordan de kunne bo her. Du kan også selv flytte rundt på møblerne. Alle møbler er i rigtige mål.</p>
+
+  <div class="people" role="group" aria-label="Vælg hvem der bor her">
+    <button class="person" data-p="wfh" type="button"><span class="emo">💻</span><span class="nm">De to hjemme&shy;arbejdere</span></button>
+    <button class="person" data-p="small" type="button"><span class="emo">👶</span><span class="nm">Den lille familie</span></button>
+    <button class="person" data-p="big" type="button"><span class="emo">👨‍👩‍👧‍👦</span><span class="nm">Den store familie</span></button>
+    <button class="person" data-p="senior" type="button"><span class="emo">🐕</span><span class="nm">Seniorerne og Fido</span></button>
+  </div>
+
+  <p class="story" id="story" aria-live="polite"></p>
+
+  <div class="planwrap">
+    <svg id="plan" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plantegning med møbler">
+      <g id="world">
+        <g id="base"></g>
+        <g id="furn"></g>
+        <g id="labels"></g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <div class="info" id="selInfo">Tryk på et møbel for at flytte, dreje eller fjerne det.</div>
+    <button class="btn" id="rotBtn" type="button" disabled>↻ Drej</button>
+    <button class="btn" id="delBtn" type="button" disabled>Fjern</button>
+  </div>
+
+  <details class="build">
+    <summary>Indret selv: tilføj møbler</summary>
+    <div class="addrow">
+      <select id="addType" aria-label="Vælg møbel"></select>
+      <button class="btn" id="addBtn" type="button">Tilføj</button>
+    </div>
+    <div class="addrow">
+      <label for="cw">Passer dit eget møbel? Bredde</label>
+      <input type="number" id="cw" min="20" max="400" value="240" inputmode="numeric">
+      <label for="cd">× dybde</label>
+      <input type="number" id="cd" min="20" max="400" value="100" inputmode="numeric">
+      <label>cm</label>
+      <button class="btn" id="addCustom" type="button">Tilføj</button>
+    </div>
+    <div class="addrow">
+      <button class="btn" id="resetBtn" type="button">Start forfra med familien</button>
+    </div>
+  </details>
+
+  <div class="cta">
+    <a class="btn primary" href="https://www.nybolig.dk/ejerlejlighed/2100/venoegade/n260336/n2603360001484" target="_blank" rel="noopener">Se lejligheden hos Nybolig</a>
+    <a class="btn" href="https://fabiopierella.github.io/venoegade20/spil/">Spil Overlev stueetagen 🦁</a>
+  </div>
+  <p class="fine">Rummene er tegnet efter målene på salgsopstillingens plantegning, som er vejledende. Møblerne har typiske standardmål. Rødt omrids betyder, at et møbel rammer en væg, et fast element eller en dør.</p>
+</main>
+
+<script>
+(function () {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.getElementById('plan');
+  const world = document.getElementById('world');
+  const base = document.getElementById('base');
+  const furn = document.getElementById('furn');
+  const labels = document.getElementById('labels');
+
+  // ---------- geometry (cm, from the listing's floor plan) ----------
+  const BOUNDS = { x0: -40, y0: -40, x1: 1395, y1: 675 };
+  const ROOMS = {
+    A:     { x: 0,    y: 30,  w: 325, h: 290, fill: 'floor' },
+    B:     { x: 0,    y: 335, w: 325, h: 300, fill: 'floor' },
+    entre: { x: 340,  y: 95,  w: 220, h: 180, fill: 'floor' },
+    bad:   { x: 575,  y: 95,  w: 260, h: 165, fill: 'wet' },
+    kok:   { x: 340,  y: 275, w: 510, h: 360, fill: 'floor' },
+    stue:  { x: 850,  y: 0,   w: 350, h: 635, fill: 'floor' },
+    ter:   { x: 1225, y: 60,  w: 150, h: 570, fill: 'deck' }
+  };
+  const WALLS = [
+    [-25, 5, 25, 655],            // left outer
+    [-25, 635, 1250, 25],         // bottom outer
+    [-25, 5, 365, 25],            // bedroom A top
+    [325, 30, 15, 200],           // A right, above door
+    [325, 310, 15, 140],          // A right below door + B right above door
+    [325, 530, 15, 105],          // B right below door
+    [0, 320, 325, 15],            // between A and B
+    [325, 70, 20, 25],            // entré top, left of front door
+    [435, 70, 425, 25],           // entré + bath top
+    [560, 95, 15, 15],            // entré/bath divider, above bath door
+    [560, 190, 15, 85],           // divider below bath door
+    [560, 260, 290, 15],          // bath bottom
+    [835, -25, 15, 300],          // stue left wall (beside bath)
+    [835, -25, 390, 25],          // stue top
+    [1200, -25, 25, 355],         // right outer, above terrace door
+    [1200, 420, 25, 240]          // right outer, below terrace door
+  ];
+  const WINDOWS = [[-25, 80, 25, 170], [-25, 400, 25, 170], [1200, 130, 25, 170], [1200, 460, 25, 140]];
+  const FIXED = [
+    { x: 0, y: 335, w: 325, h: 60, kind: 'closet' },
+    { x: 560, y: 275, w: 275, h: 60, kind: 'counter' },
+    { x: 565, y: 440, w: 220, h: 90, kind: 'island' }
+  ];
+  const DOORS = [ // keep-clear zones where doors swing
+    { x: 245, y: 230, w: 80, h: 80, hinge: [325, 230], from: 180, to: 90 },
+    { x: 245, y: 450, w: 80, h: 80, hinge: [325, 530], from: 270, to: 180 },
+    { x: 345, y: 95, w: 90, h: 90, hinge: [345, 95], from: 0, to: 90 },
+    { x: 1120, y: 330, w: 80, h: 90, hinge: [1200, 420], from: 180, to: 270 }
+  ];
+  const OBST = WALLS.map(w => ({ x: w[0], y: w[1], w: w[2], h: w[3] }))
+    .concat(FIXED, DOORS, [ROOMS.bad]);
+
+  // ---------- furniture catalogue: w = width, d = depth (cm) ----------
+  const T = {
+    bed160:   { n: 'Dobbeltseng', w: 160, d: 200 },
+    bed180:   { n: 'Dobbeltseng', w: 180, d: 200 },
+    single:   { n: 'Enkeltseng', w: 90, d: 200 },
+    bunk:     { n: 'Køjeseng', w: 90, d: 200 },
+    crib:     { n: 'Tremmeseng', w: 60, d: 120 },
+    night:    { n: 'Natbord', w: 45, d: 40 },
+    desk:     { n: 'Skrivebord', w: 140, d: 70 },
+    chair:    { n: 'Kontorstol', w: 50, d: 50 },
+    sofa:     { n: 'Sofa, 3 personer', w: 220, d: 90 },
+    sofabed:  { n: 'Sovesofa', w: 200, d: 90 },
+    arm:      { n: 'Lænestol', w: 80, d: 80 },
+    coffee:   { n: 'Sofabord', w: 110, d: 60 },
+    dining6:  { n: 'Spisebord til 6', w: 240, d: 170 },
+    dining4:  { n: 'Spisebord til 4', w: 120, d: 150 },
+    high:     { n: 'Høj stol', w: 50, d: 50 },
+    tv:       { n: 'TV-bænk', w: 160, d: 40 },
+    shelf:    { n: 'Reol', w: 100, d: 35 },
+    dresser:  { n: 'Kommode', w: 100, d: 50 },
+    toys:     { n: 'Legetøjskasse', w: 80, d: 40 },
+    mat:      { n: 'Legetæppe', w: 150, d: 150, soft: true },
+    dog:      { n: 'Fidos kurv', w: 80, d: 60 },
+    plant:    { n: 'Plante', w: 40, d: 40 },
+    sand:     { n: 'Sandkasse', w: 120, d: 120 },
+    grill:    { n: 'Grill', w: 60, d: 50 },
+    cafe:     { n: 'Cafébord', w: 70, d: 70 },
+    tchair:   { n: 'Terrassestol', w: 55, d: 55 },
+    lounge:   { n: 'Liggestol', w: 70, d: 190 },
+    custom:   { n: 'Dit møbel', w: 100, d: 100 }
+  };
+  const ADDABLE = ['sofa','sofabed','arm','coffee','dining4','dining6','tv','shelf','dresser','bed160','bed180','single','bunk','crib','night','desk','chair','toys','mat','dog','plant','cafe','tchair','lounge','grill','sand'];
+
+  // ---------- the four households ----------
+  const P = {
+    wfh: {
+      accent: '#2f6fd6',
+      story: 'Et rigtigt hjemmekontor med plads til to skriveborde, så ingen behøver at holde møde fra sofaen. Frokostpausen holder I på den sydvendte terrasse.',
+      rooms: { A: 'Soveværelse', B: 'Hjemmekontor' },
+      items: [
+        ['bed160', 160, 130, 0], ['night', 52, 55, 0], ['night', 268, 55, 0],
+        ['desk', 35, 470, 90], ['chair', 100, 470, 0], ['desk', 165, 600, 0], ['chair', 165, 530, 0], ['shelf', 307, 585, 90],
+        ['dining6', 1025, 540, 0], ['sofa', 1030, 45, 0], ['coffee', 1030, 165, 0], ['arm', 1150, 165, 270], ['plant', 875, 30, 0],
+        ['cafe', 1300, 200, 0], ['tchair', 1300, 128, 0], ['tchair', 1300, 272, 180], ['plant', 1300, 580, 0]
+      ]
+    },
+    small: {
+      accent: '#c98a12',
+      story: 'Tremmesengen står ved siden af jeres seng, og børneværelset er klar, når den lille vokser. Barnevognen ruller lige ind uden trapper, og der er legeplads i gården.',
+      rooms: { A: 'Soveværelse', B: 'Børneværelse' },
+      items: [
+        ['bed160', 145, 130, 0], ['night', 40, 55, 0], ['crib', 275, 100, 0],
+        ['single', 100, 590, 90], ['dresser', 25, 460, 90], ['mat', 160, 470, 0], ['toys', 270, 600, 0],
+        ['dining4', 1025, 545, 90], ['high', 1128, 545, 0], ['sofa', 1030, 45, 0], ['mat', 1030, 190, 0], ['plant', 875, 30, 0],
+        ['sand', 1300, 200, 0], ['cafe', 1300, 450, 0], ['tchair', 1300, 375, 0], ['tchair', 1300, 525, 180]
+      ]
+    },
+    big: {
+      accent: '#2f9468',
+      story: 'Køjeseng = verdens bedste hule. Spisebord til seks, sandkasse på terrassen og legepladsen i gården lige uden for døren.',
+      rooms: { A: 'Soveværelse', B: 'Børneværelse' },
+      items: [
+        ['bed160', 160, 130, 0], ['night', 52, 55, 0], ['night', 268, 55, 0],
+        ['bunk', 100, 590, 90], ['desk', 35, 470, 90], ['chair', 100, 470, 0], ['toys', 305, 590, 90],
+        ['dining6', 1025, 540, 0], ['sofa', 1030, 45, 0], ['coffee', 1030, 165, 0], ['plant', 875, 30, 0],
+        ['sand', 1300, 200, 0], ['cafe', 1300, 400, 0], ['tchair', 1300, 326, 0], ['tchair', 1300, 474, 180], ['grill', 1300, 570, 0]
+      ]
+    },
+    senior: {
+      accent: '#8a5cc7',
+      story: 'Ingen trapper, en stor seng i soveværelset og et gæsteværelse til børnebørnene. Fido går selv ud på terrassen, mens kaffen brygger.',
+      rooms: { A: 'Soveværelse', B: 'Gæsteværelse' },
+      items: [
+        ['bed180', 160, 130, 0], ['night', 45, 55, 0], ['night', 275, 55, 0],
+        ['sofabed', 100, 590, 180], ['desk', 35, 470, 90], ['chair', 100, 470, 0], ['arm', 175, 450, 0],
+        ['dining4', 1025, 545, 90], ['sofa', 1005, 45, 0], ['coffee', 1005, 165, 0], ['arm', 1150, 165, 270], ['dog', 1155, 45, 0], ['plant', 875, 30, 0],
+        ['lounge', 1260, 200, 0], ['lounge', 1340, 200, 0], ['plant', 1300, 560, 0]
+      ]
+    }
+  };
+
+  // ---------- svg helpers ----------
+  const el = (tag, attrs, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  const R = (x, y, w, h, extra) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" ${extra || ''}/>`;
+  const C = (cx, cy, r, extra) => `<circle cx="${cx}" cy="${cy}" r="${r}" ${extra || ''}/>`;
+  const S = 'fill="var(--furn)" stroke="var(--furn-line)" stroke-width="2.5"';
+  const L = 'fill="none" stroke="var(--furn-line)" stroke-width="2"';
+
+  // drawings are centred on 0,0 with the item's w × d footprint
+  function draw(type, w, d) {
+    const x = -w / 2, y = -d / 2;
+    switch (type) {
+      case 'bed160': case 'bed180': case 'single': {
+        const pw = w >= 140 ? (w - 30) / 2 : w - 20;
+        let s = R(x, y, w, d, S + ' rx="6"');
+        if (w >= 140) s += R(x + 10, y + 10, pw, 34, S + ' rx="8"') + R(x + 20 + pw, y + 10, pw, 34, S + ' rx="8"');
+        else s += R(x + 10, y + 10, pw, 34, S + ' rx="8"');
+        s += R(x + 4, y + 56, w - 8, d - 60, 'fill="var(--accent)" fill-opacity="0.18" stroke="var(--furn-line)" stroke-width="2" rx="4"');
+        return s;
+      }
+      case 'bunk':
+        return R(x, y, w, d, S + ' rx="4"') + R(x + 8, y + 8, w - 16, d - 16, L + ' stroke-dasharray="8 6"') +
+          R(x + 15, y + 12, w - 30, 30, S + ' rx="8"') + R(x + 6, y + 55, w - 12, d - 62, 'fill="var(--accent)" fill-opacity="0.25" stroke="var(--furn-line)" stroke-width="2"') +
+          `<path d="M${x + w - 16} ${y + 60} v80 M${x + w - 6} ${y + 60} v80 M${x + w - 16} ${y + 80} h10 M${x + w - 16} ${y + 100} h10 M${x + w - 16} ${y + 120} h10" ${L}/>`;
+      case 'crib': {
+        let s = R(x, y, w, d, S + ' rx="4"');
+        for (let i = 1; i < 6; i++) s += `<line x1="${x + 4}" y1="${y + i * d / 6}" x2="${x + w - 4}" y2="${y + i * d / 6}" ${L} stroke-opacity="0.5"/>`;
+        return s + R(x + 10, y + 8, w - 20, 22, 'fill="var(--accent)" fill-opacity="0.3" stroke="none" rx="6"');
+      }
+      case 'night':
+        return R(x, y, w, d, S + ' rx="3"') + C(0, 0, 9, 'fill="#f6d36b" stroke="var(--furn-line)" stroke-width="1.5"');
+      case 'desk':
+        return R(x, y, w, d, S + ' rx="3"') + R(-25, y + 12, 50, 32, 'fill="var(--fixed)" stroke="var(--furn-line)" stroke-width="1.5" rx="3"') + R(-28, y + 44, 56, 4, 'fill="var(--furn-line)"');
+      case 'chair': case 'high':
+        return C(0, 4, w / 2 - 4, S) + `<path d="M${-w / 2 + 6} ${-4} A${w / 2 - 4} ${w / 2 - 4} 0 0 1 ${w / 2 - 6} -4" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"/>`;
+      case 'sofa': case 'sofabed': {
+        let s = R(x, y, w, d, S + ' rx="12"') + R(x + 4, y + 4, w - 8, 22, 'fill="var(--accent)" fill-opacity="0.35" stroke="var(--furn-line)" stroke-width="2" rx="8"');
+        s += R(x + 4, y + 26, 18, d - 30, S + ' rx="6"') + R(x + w - 22, y + 26, 18, d - 30, S + ' rx="6"');
+        const n = 3, cw = (w - 44) / n;
+        for (let i = 1; i < n; i++) s += `<line x1="${x + 22 + i * cw}" y1="${y + 30}" x2="${x + 22 + i * cw}" y2="${y + d - 6}" ${L}/>`;
+        if (type === 'sofabed') s += R(x + 30, y + 40, w - 60, d - 50, 'fill="none" stroke="var(--furn-line)" stroke-width="1.5" stroke-dasharray="5 5"');
+        return s;
+      }
+      case 'arm':
+        return R(x, y, w, d, S + ' rx="14"') + R(x + 4, y + 4, w - 8, 18, 'fill="var(--accent)" fill-opacity="0.35" stroke="var(--furn-line)" stroke-width="2" rx="8"') + R(x + 4, y + 22, 14, d - 26, S + ' rx="5"') + R(x + w - 18, y + 22, 14, d - 26, S + ' rx="5"');
+      case 'coffee':
+        return R(x, y, w, d, S + ' rx="10"') + C(x + 30, 0, 9, 'fill="var(--accent)" fill-opacity="0.4" stroke="none"');
+      case 'dining6': {
+        let s = '';
+        [-40, 40].forEach(cx => { s += R(cx - 20, y, 40, 32, S + ' rx="8"') + R(cx - 20, y + d - 32, 40, 32, S + ' rx="8"'); });
+        s += R(x, -20, 32, 40, S + ' rx="8"') + R(x + w - 32, -20, 32, 40, S + ' rx="8"');
+        return s + R(-80, -45, 160, 90, S + ' rx="6"') + C(0, 0, 12, 'fill="#9fd08f" stroke="var(--furn-line)" stroke-width="1.5"');
+      }
+      case 'dining4': {
+        let s = '';
+        [-30, 30].forEach(cx => { s += R(cx - 20, y, 40, 32, S + ' rx="8"') + R(cx - 20, y + d - 32, 40, 32, S + ' rx="8"'); });
+        return s + R(-60, -45, 120, 90, S + ' rx="6"') + C(0, 0, 11, 'fill="#9fd08f" stroke="var(--furn-line)" stroke-width="1.5"');
+      }
+      case 'tv':
+        return R(x, y, w, d, S + ' rx="3"') + R(-55, y + 4, 110, 8, 'fill="var(--furn-line)" rx="2"');
+      case 'shelf': {
+        let s = R(x, y, w, d, S + ' rx="2"');
+        for (let i = 1; i < 4; i++) s += `<line x1="${x + i * w / 4}" y1="${y + 3}" x2="${x + i * w / 4}" y2="${y + d - 3}" ${L}/>`;
+        return s;
+      }
+      case 'dresser':
+        return R(x, y, w, d, S + ' rx="3"') + `<line x1="${x + 4}" y1="0" x2="${x + w - 4}" y2="0" ${L}/>` + C(0, -12, 3, 'fill="var(--furn-line)"') + C(0, 12, 3, 'fill="var(--furn-line)"');
+      case 'toys':
+        return R(x, y, w, d, 'fill="var(--accent)" fill-opacity="0.35" stroke="var(--furn-line)" stroke-width="2.5" rx="4"') + C(-18, 0, 8, 'fill="#e05c5c"') + R(4, -8, 16, 16, 'fill="#f6d36b"');
+      case 'mat':
+        return C(0, 0, w / 2, 'fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="10 8"') + C(0, 0, w / 4, 'fill="none" stroke="var(--accent)" stroke-opacity="0.5" stroke-width="2"');
+      case 'dog':
+        return `<ellipse cx="0" cy="0" rx="${w / 2}" ry="${d / 2}" ${S}/>` +
+          `<ellipse cx="-4" cy="4" rx="24" ry="15" fill="#c08a4f" stroke="var(--furn-line)" stroke-width="1.5"/>` +
+          C(20, -6, 11, 'fill="#c08a4f" stroke="var(--furn-line)" stroke-width="1.5"') +
+          `<ellipse cx="27" cy="-14" rx="5" ry="8" fill="#8a5a2b" transform="rotate(30 27 -14)"/>` + C(24, -8, 2, 'fill="#222"');
+      case 'plant':
+        return C(0, 0, w / 2, 'fill="#5fa35a" stroke="#3d7a3a" stroke-width="2"') + C(-7, -6, 8, 'fill="#7cc274"') + C(8, 5, 7, 'fill="#7cc274"');
+      case 'sand':
+        return R(x, y, w, d, 'fill="#ecd59a" stroke="#a8864a" stroke-width="5" rx="4"') + C(-25, -20, 10, 'fill="#e05c5c"') + R(15, 15, 22, 16, 'fill="#4a90d9" rx="3"');
+      case 'grill':
+        return R(x, y, w, d, S + ' rx="6"') + C(0, 0, 19, 'fill="#3a3a3a"') + `<path d="M-14 -6 h28 M-16 2 h32 M-14 10 h28" stroke="#888" stroke-width="2"/>`;
+      case 'cafe':
+        return C(0, 0, w / 2, S) + C(0, 0, 8, 'fill="#f6d36b"');
+      case 'tchair':
+        return R(x + 4, y + 4, w - 8, d - 8, S + ' rx="8"') + R(x + 4, y + 4, w - 8, 12, 'fill="var(--accent)" fill-opacity="0.4" rx="6"');
+      case 'lounge':
+        return R(x, y, w, d, S + ' rx="10"') + R(x + 6, y + 6, w - 12, 45, 'fill="var(--accent)" fill-opacity="0.35" stroke="var(--furn-line)" stroke-width="2" rx="8"');
+      default:
+        return R(x, y, w, d, 'fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="3" rx="4"') +
+          `<text x="0" y="6" text-anchor="middle" font-size="22" font-weight="800" fill="var(--ink)" font-family="Bricolage Grotesque, system-ui, sans-serif">${w}×${d}</text>`;
+    }
+  }
+
+  // ---------- base plan ----------
+  function drawBase() {
+    let s = '';
+    const fills = { floor: 'var(--floor)', wet: 'var(--floor-wet)', deck: 'var(--deck)' };
+    for (const k in ROOMS) { const r = ROOMS[k]; s += R(r.x, r.y, r.w, r.h, `fill="${fills[r.fill]}"`); }
+    // decking lines
+    for (let y = ROOMS.ter.y + 20; y < ROOMS.ter.y + ROOMS.ter.h; y += 20) s += `<line x1="${ROOMS.ter.x}" y1="${y}" x2="${ROOMS.ter.x + ROOMS.ter.w}" y2="${y}" stroke="var(--furn-line)" stroke-opacity="0.15" stroke-width="2"/>`;
+    s += R(ROOMS.ter.x, ROOMS.ter.y, ROOMS.ter.w, ROOMS.ter.h, 'fill="none" stroke="var(--furn-line)" stroke-opacity="0.5" stroke-width="3" stroke-dasharray="12 8"');
+    // fixed elements
+    FIXED.forEach(f => { s += R(f.x, f.y, f.w, f.h, 'fill="var(--fixed)" stroke="var(--furn-line)" stroke-width="2"'); });
+    // wardrobe sliding doors
+    for (let i = 1; i < 4; i++) s += `<line x1="${i * 325 / 4}" y1="337" x2="${i * 325 / 4}" y2="393" stroke="var(--furn-line)" stroke-width="2"/>`;
+    // kitchen counter details: fridge, sink, hob
+    s += R(565, 280, 55, 50, 'fill="none" stroke="var(--furn-line)" stroke-width="2"');
+    s += R(655, 285, 50, 38, 'fill="var(--paper)" stroke="var(--furn-line)" stroke-width="2" rx="6"');
+    [[760, 293], [790, 293], [760, 318], [790, 318]].forEach(p => { s += C(p[0], p[1], 9, 'fill="none" stroke="var(--furn-line)" stroke-width="2"'); });
+    // bathroom: toilet, sink, shower, washer
+    s += `<ellipse cx="800" cy="135" rx="18" ry="24" fill="var(--paper)" stroke="var(--furn-line)" stroke-width="2"/>` + R(815, 115, 18, 40, 'fill="var(--paper)" stroke="var(--furn-line)" stroke-width="2"');
+    s += R(640, 210, 60, 45, 'fill="var(--paper)" stroke="var(--furn-line)" stroke-width="2" rx="8"');
+    s += R(580, 100, 90, 90, 'fill="none" stroke="var(--furn-line)" stroke-width="2" stroke-dasharray="6 5"') + `<path d="M580 100 L670 190 M670 100 L580 190" stroke="var(--furn-line)" stroke-opacity="0.3" stroke-width="2"/>`;
+    s += R(580, 200, 55, 55, 'fill="var(--paper)" stroke="var(--furn-line)" stroke-width="2"') + C(607, 228, 17, 'fill="none" stroke="var(--furn-line)" stroke-width="2"');
+    // door swings
+    DOORS.forEach(d => {
+      const [hx, hy] = d.hinge, r = Math.max(d.w, d.h) - 5;
+      const a1 = d.from * Math.PI / 180, a2 = d.to * Math.PI / 180;
+      const p1 = [hx + r * Math.cos(a1), hy + r * Math.sin(a1)], p2 = [hx + r * Math.cos(a2), hy + r * Math.sin(a2)];
+      const sweep = ((d.to - d.from + 360) % 360) <= 180 ? 1 : 0;
+      s += `<path d="M${hx} ${hy} L${p2[0]} ${p2[1]} M${p1[0]} ${p1[1]} A${r} ${r} 0 0 ${sweep} ${p2[0]} ${p2[1]}" fill="none" stroke="var(--furn-line)" stroke-opacity="0.55" stroke-width="2"/>`;
+    });
+    // walls and windows
+    WALLS.forEach(w => { s += R(w[0], w[1], w[2], w[3], 'fill="var(--wall)"'); });
+    WINDOWS.forEach(w => { s += R(w[0] + 8, w[1], w[2] - 16, w[3], 'fill="var(--glass)"'); });
+    base.innerHTML = s;
+  }
+
+  // ---------- labels (kept upright when the plan is rotated) ----------
+  let portrait = false;
+  function drawLabels(roomNames) {
+    // [name, dims, x, y]: placed in spots no household layout uses
+    const L = [
+      [roomNames.A, '3,25 × 2,90 m', 125, 262, true],
+      [roomNames.B, '3,25 × 3,00 m', 162, 362, true],
+      ['Køkken', '', 595, 405],
+      ['Stue', '3,50 × 6,35 m', 1025, 277],
+      ['Bad', '', 730, 180],
+      ['Entré', '', 450, 205],
+      ['Terrasse', '1,50 × 5,70 m', 1300, 26]
+    ];
+    let s = '';
+    L.forEach(([name, dims, cx, cy, alongPlan]) => {
+      const small = cy > 330 && cy < 400 || cy < 60 || cy > 640;
+      const fs = small ? 24 : 30, gap = small ? 22 : 28;
+      const rot = portrait && !alongPlan ? `transform="rotate(-90 ${cx} ${cy})"` : '';
+      s += `<g ${rot} pointer-events="none"><text x="${cx}" y="${cy}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="var(--ink)" fill-opacity="0.78" paint-order="stroke" stroke="var(--floor)" stroke-width="8" stroke-opacity="0.85" font-family="Bricolage Grotesque, system-ui, sans-serif">${name}</text>` +
+        (dims ? `<text x="${cx}" y="${cy + gap}" text-anchor="middle" font-size="${small ? 18 : 21}" fill="var(--ink)" fill-opacity="0.65" paint-order="stroke" stroke="var(--floor)" stroke-width="6" stroke-opacity="0.85" font-family="Bricolage Grotesque, system-ui, sans-serif">${dims}</text>` : '') + '</g>';
+    });
+    labels.innerHTML = s;
+  }
+
+  // ---------- state ----------
+  let current = 'wfh';
+  let items = [];
+  let selected = null;
+  let nextId = 1;
+
+  function dims(it) {
+    const t = T[it.type];
+    const w = it.w || t.w, d = it.d || t.d;
+    return (it.rot % 180 === 90) ? [d, w] : [w, d];
+  }
+  function blocked(it) {
+    if (T[it.type].soft) return false;
+    const [w, d] = dims(it);
+    const x0 = it.cx - w / 2, y0 = it.cy - d / 2, x1 = x0 + w, y1 = y0 + d;
+    if (x0 < -1 || x1 > 1376 || y0 < -1 || y1 > 636) return true;
+    return OBST.some(o => x0 < o.x + o.w - 1 && x1 > o.x + 1 && y0 < o.y + o.h - 1 && y1 > o.y + 1);
+  }
+
+  function itemNode(it) {
+    const t = T[it.type];
+    const w = it.w || t.w, d = it.d || t.d;
+    const g = el('g', { class: 'item', 'data-id': it.id, tabindex: '0', role: 'button', 'aria-label': t.n });
+    g.innerHTML = draw(it.type, w, d) + R(-w / 2, -d / 2, w, d, 'class="hit" fill="transparent" stroke="none" rx="6"');
+    place(g, it);
+    g.addEventListener('pointerdown', startDrag);
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(it.id); } });
+    return g;
+  }
+  function place(g, it) {
+    g.setAttribute('transform', `translate(${it.cx} ${it.cy}) rotate(${it.rot})`);
+    g.classList.toggle('bad', blocked(it));
+    g.classList.toggle('sel', selected === it.id);
+  }
+  function renderItems(animate) {
+    furn.innerHTML = '';
+    // soft items (rugs) underneath
+    items.slice().sort((a, b) => (T[b.type].soft ? 1 : 0) - (T[a.type].soft ? 1 : 0)).forEach(it => furn.appendChild(itemNode(it)));
+    if (animate) { furn.classList.remove('fade'); void furn.getBBox(); furn.classList.add('fade'); }
+    updateToolbar();
+  }
+
+  function loadPersona(key) {
+    current = key;
+    const p = P[key];
+    document.documentElement.style.setProperty('--accent', p.accent);
+    document.querySelectorAll('.person').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === key)));
+    document.getElementById('story').textContent = p.story;
+    items = p.items.map(([type, cx, cy, rot]) => ({ id: nextId++, type, cx, cy, rot }));
+    selected = null;
+    drawLabels(p.rooms);
+    renderItems(true);
+  }
+
+  // ---------- selection & toolbar ----------
+  const selInfo = document.getElementById('selInfo');
+  const rotBtn = document.getElementById('rotBtn');
+  const delBtn = document.getElementById('delBtn');
+  function select(id) {
+    selected = id;
+    furn.querySelectorAll('.item').forEach(g => g.classList.toggle('sel', +g.dataset.id === id));
+    updateToolbar();
+  }
+  function updateToolbar() {
+    const it = items.find(i => i.id === selected);
+    rotBtn.disabled = delBtn.disabled = !it;
+    if (!it) { selInfo.textContent = 'Tryk på et møbel for at flytte, dreje eller fjerne det.'; return; }
+    const t = T[it.type];
+    const w = it.w || t.w, d = it.d || t.d;
+    const bad = blocked(it);
+    selInfo.innerHTML = `${t.n}<small${bad ? ' class="warn"' : ''}>${w} × ${d} cm${bad ? ' · rammer en væg, et fast element eller en dør' : ''}</small>`;
+  }
+  rotBtn.addEventListener('click', () => {
+    const it = items.find(i => i.id === selected); if (!it) return;
+    it.rot = (it.rot + 90) % 360;
+    place(furn.querySelector(`[data-id="${it.id}"]`), it); updateToolbar();
+  });
+  delBtn.addEventListener('click', () => {
+    items = items.filter(i => i.id !== selected); selected = null; renderItems(false);
+  });
+
+  // ---------- dragging ----------
+  function toPlan(e) {
+    const m = world.getScreenCTM().inverse();
+    const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m);
+    return [p.x, p.y];
+  }
+  let drag = null;
+  function startDrag(e) {
+    const g = e.currentTarget, id = +g.dataset.id;
+    const it = items.find(i => i.id === id);
+    select(id);
+    const [px, py] = toPlan(e);
+    drag = { g, it, ox: it.cx - px, oy: it.cy - py, moved: false };
+    g.setPointerCapture(e.pointerId);
+    g.classList.add('dragging');
+    g.parentNode.appendChild(g); // bring to front
+    e.preventDefault();
+  }
+  svg.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const [px, py] = toPlan(e);
+    const snap = v => Math.round(v / 5) * 5;
+    drag.it.cx = Math.max(BOUNDS.x0, Math.min(BOUNDS.x1, snap(px + drag.ox)));
+    drag.it.cy = Math.max(BOUNDS.y0, Math.min(BOUNDS.y1, snap(py + drag.oy)));
+    drag.moved = true;
+    place(drag.g, drag.it);
+  });
+  const endDrag = () => { if (!drag) return; drag.g.classList.remove('dragging'); drag = null; updateToolbar(); };
+  svg.addEventListener('pointerup', endDrag);
+  svg.addEventListener('pointercancel', endDrag);
+  svg.addEventListener('pointerdown', e => { if (!e.target.closest('.item')) select(null); });
+
+  // ---------- adding ----------
+  const addType = document.getElementById('addType');
+  ADDABLE.forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = `${T[k].n} (${T[k].w} × ${T[k].d} cm)`; addType.appendChild(o); });
+  function addItem(it) {
+    it.id = nextId++; items.push(it); renderItems(false); select(it.id);
+    svg.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+  }
+  document.getElementById('addBtn').addEventListener('click', () => addItem({ type: addType.value, cx: 1025, cy: 330, rot: 0 }));
+  document.getElementById('addCustom').addEventListener('click', () => {
+    const clamp = v => Math.max(20, Math.min(400, Math.round(+v || 100)));
+    addItem({ type: 'custom', w: clamp(document.getElementById('cw').value), d: clamp(document.getElementById('cd').value), cx: 1025, cy: 330, rot: 0 });
+  });
+  document.getElementById('resetBtn').addEventListener('click', () => loadPersona(current));
+  document.querySelectorAll('.person').forEach(b => b.addEventListener('click', () => loadPersona(b.dataset.p)));
+
+  // ---------- orientation: tall plan on narrow screens ----------
+  const mq = matchMedia('(max-width: 600px)');
+  function orient() {
+    portrait = mq.matches;
+    const W = BOUNDS.x1 - BOUNDS.x0, H = BOUNDS.y1 - BOUNDS.y0;
+    if (portrait) {
+      svg.setAttribute('viewBox', `0 0 ${H} ${W}`);
+      world.setAttribute('transform', `translate(${BOUNDS.y1} ${-BOUNDS.x0}) rotate(90)`);
+    } else {
+      svg.setAttribute('viewBox', `${BOUNDS.x0} ${BOUNDS.y0} ${W} ${H}`);
+      world.removeAttribute('transform');
+    }
+    drawLabels(P[current].rooms);
+  }
+  mq.addEventListener('change', orient);
+
+  drawBase();
+  orient();
+  loadPersona('wfh');
+})();
+</script>
+</body>
+</html>
