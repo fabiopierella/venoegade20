@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hvilken Venøgade-beboer er du?</title>
+<meta name="description" content="Seks spørgsmål, fire slags beboere. Find ud af, hvem du ville være på Venøgade 20, st. th. på Østerbro.">
+<meta property="og:title" content="Hvilken Venøgade-beboer er du? 🏡">
+<meta property="og:description" content="Seks spørgsmål, fire slags beboere. Er du Hjemmearbejderen, Den store familie eller måske Fido?">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://fabiopierella.github.io/venoegade20/quiz/preview.png">
+<meta property="og:url" content="https://fabiopierella.github.io/venoegade20/quiz/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #eef1f4;
+  --paper: #ffffff;
+  --ink: #1e2a44;
+  --muted: #5d6879;
+  --line: #d3d9e1;
+  --accent: #1e2a44;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #12161d; --paper: #1a2029; --ink: #e8edf4; --muted: #9aa6b6; --line: #2d3642; --accent: #e8edf4; }
+}
+:root[data-theme="dark"] { --bg: #12161d; --paper: #1a2029; --ink: #e8edf4; --muted: #9aa6b6; --line: #2d3642; --accent: #e8edf4; }
+*, *::before, *::after { box-sizing: inherit; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.45; -webkit-tap-highlight-color: transparent;
+}
+main { max-width: 560px; margin: 0 auto; padding: 22px 16px 32px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: clamp(2rem, 9vw, 3rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; margin: 0; }
+.lede { margin: 0; color: var(--muted); }
+.card { background: var(--paper); border-radius: 20px; padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+.card[hidden] { display: none; }
+.bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .3s ease; }
+.count { color: var(--muted); font-size: .9rem; font-weight: 600; margin: 0; }
+.q { font-size: clamp(1.35rem, 5.5vw, 1.7rem); font-weight: 800; line-height: 1.15; margin: 0; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  font: inherit; font-size: 1.02rem; text-align: left; color: var(--ink); background: var(--bg);
+  border: 2px solid var(--line); border-radius: 14px; padding: 14px 14px; cursor: pointer; display: flex; gap: 12px; align-items: center;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.opt .e { font-size: 1.5rem; line-height: 1; flex: 0 0 auto; }
+.opt:hover { border-color: var(--muted); }
+.opt:active { transform: scale(0.98); }
+.opt.pick { border-color: var(--ink); background: var(--paper); }
+.btn {
+  font: inherit; font-weight: 800; font-size: 1.05rem; border-radius: 12px; padding: 14px 16px; cursor: pointer;
+  background: var(--paper); color: var(--ink); border: 2px solid var(--line); text-decoration: none; text-align: center; display: block;
+}
+.btn.primary { background: var(--res, var(--ink)); border-color: var(--res, var(--ink)); color: #fff; }
+.btn:focus-visible, .opt:focus-visible { outline: 3px solid var(--res, var(--ink)); outline-offset: 2px; }
+.res-emo { font-size: 4.2rem; line-height: 1; }
+.res-kicker { margin: 0; color: var(--muted); font-weight: 600; }
+.res-title { margin: 0; font-size: clamp(1.9rem, 8vw, 2.5rem); font-weight: 800; line-height: 1.05; color: var(--res); }
+.res-text { margin: 0; font-size: 1.05rem; }
+.mix { display: flex; flex-direction: column; gap: 6px; }
+.mix div { display: grid; grid-template-columns: 9.6em 1fr 2.6em; gap: 8px; align-items: center; font-size: .9rem; color: var(--muted); }
+.mix div > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mix .track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.mix .fill { display: block; height: 100%; border-radius: 99px; }
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.toast { min-height: 1.3em; margin: 0; text-align: center; color: var(--muted); font-size: .95rem; }
+.fine { color: var(--muted); font-size: .9rem; margin: 0; text-align: center; }
+.fine a { color: var(--ink); }
+.in { animation: in .3s ease-out; }
+@keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .in { animation: none; } .bar span, .opt { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <section class="card in" id="intro">
+    <h1>Hvilken Venøgade-beboer er du?</h1>
+    <p class="lede">Seks spørgsmål, fire slags beboere. Svar ærligt, og find ud af, hvem du ville være på Venøgade 20, st. th.</p>
+    <button class="btn primary" id="go" type="button">Start quizzen</button>
+  </section>
+
+  <section class="card" id="quiz" hidden aria-live="polite">
+    <div class="bar"><span id="bar"></span></div>
+    <p class="count" id="count"></p>
+    <h2 class="q" id="q"></h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <div class="res-emo" id="rEmo"></div>
+    <p class="res-kicker">Du er...</p>
+    <h2 class="res-title" id="rTitle"></h2>
+    <p class="res-text" id="rText"></p>
+    <div class="mix" id="mix" aria-label="Din fordeling"></div>
+    <div class="actions">
+      <button class="btn primary" id="share" type="button">Del dit resultat</button>
+      <p class="toast" id="toast" role="status"></p>
+      <a class="btn" id="layout" href="#">Se din indretning af lejligheden</a>
+      <a class="btn" href="https://www.nybolig.dk/ejerlejlighed/2100/venoegade/n260336/n2603360001484" target="_blank" rel="noopener">Se lejligheden hos Nybolig</a>
+      <button class="btn" id="again" type="button">Tag quizzen igen</button>
+    </div>
+  </section>
+
+  <p class="fine">Mere fra Venøgade 20: <a href="https://fabiopierella.github.io/venoegade20/spil/">Overlev stueetagen 🦁</a> · <a href="https://fabiopierella.github.io/venoegade20/hvem-bor-her/">Hvem bor her? 🛋️</a></p>
+</main>
+
+<script>
+(function () {
+  const BASE = 'https://fabiopierella.github.io/venoegade20/';
+  const RESULTS = {
+    wfh: {
+      emo: '💻', short: 'Hjemmearbejder', name: 'Hjemmearbejderen', color: '#2f6fd6',
+      text: 'Du pendler fem skridt fra sengen til skrivebordet og holder frokostpause i solen på terrassen. På Venøgade 20 får du et rigtigt hjemmekontor med en dør, du kan lukke, så kollegerne aldrig ser vasketøjsbunken.'
+    },
+    small: {
+      emo: '👶', short: 'Lille familie', name: 'Den lille familie', color: '#c98a12',
+      text: 'Barnevognen ruller lige ind uden trapper, der er legeplads i gården, og børneværelset ligger klar til den dag, den lille vil have sit eget.'
+    },
+    big: {
+      emo: '👨‍👩‍👧‍👦', short: 'Store familie', name: 'Den store familie', color: '#2f9468',
+      text: 'Spisebord til seks, en køjeseng der også er en borg, og sandkasse på terrassen. Og ingen trapper med tre indkøbsposer og to trætte unger.'
+    },
+    senior: {
+      emo: '🐕', short: 'Fido', name: 'Fido (og dine mennesker)', color: '#8a5cc7',
+      text: 'Ingen trapper, terrassen lige uden for stuen og et gæsteværelse til børnebørnene. Du kan selv gå ud i solen, mens kaffen brygger.'
+    }
+  };
+  const QUESTIONS = [
+    { q: 'Søndag morgen. Hvad sker der?', o: [
+      ['💻', 'Laptoppen er åben. Jeg skal "bare lige" tjekke mails.', 'wfh'],
+      ['🥞', 'Pandekager med en lille én på skødet.', 'small'],
+      ['🌪️', 'Kaos, legetøj og tre forskellige slags morgenmad.', 'big'],
+      ['🦮', 'Morgentur med hunden og avisen bagefter.', 'senior'] ] },
+    { q: 'Hvad står der på din terrasse?', o: [
+      ['📶', 'En stol med god wifi-dækning.', 'wfh'],
+      ['🍼', 'En barnevogn med en sovende baby i.', 'small'],
+      ['⚽', 'En grill, en fodbold og nogen der græder over fodbolden.', 'big'],
+      ['🌞', 'To liggestole og en vandskål.', 'senior'] ] },
+    { q: 'Dit forhold til trapper?', o: [
+      ['🪑', 'Neutralt. Jeg forlader sjældent kontorstolen.', 'wfh'],
+      ['🛒', 'Har du prøvet at bære en barnevogn op til 4. sal?', 'small'],
+      ['🛍️', 'Med tre indkøbsposer og to unger? Nej tak.', 'big'],
+      ['🦵', 'Mine knæ og jeg har talt sammen. Svaret er nej.', 'senior'] ] },
+    { q: 'Hvad lægger gæsterne først mærke til?', o: [
+      ['🖥️', 'To skærme og en ringlight.', 'wfh'],
+      ['📻', 'Lyden af en babyalarm.', 'small'],
+      ['🧱', 'Lego. Under fødderne.', 'big'],
+      ['🐾', 'Fido, der hilser på alle.', 'senior'] ] },
+    { q: 'Hvad drømmer du om at bruge det ekstra værelse til?', o: [
+      ['🚪', 'Et kontor med en dør, der kan lukkes.', 'wfh'],
+      ['⭐', 'Et lille børneværelse med stjernehimmel.', 'small'],
+      ['🏰', 'En køjeseng, der også er en borg.', 'big'],
+      ['🛏️', 'Et gæsteværelse til børnebørnene.', 'senior'] ] },
+    { q: 'Fredag aften?', o: [
+      ['⏰', 'Jeg logger af kl. 16.01 præcis.', 'wfh'],
+      ['🛋️', 'Sofaen kl. 20, hvis vi er heldige.', 'small'],
+      ['🍕', 'Pizza til seks og film med pause hvert tiende minut.', 'big'],
+      ['🍷', 'Vin på terrassen i aftensolen.', 'senior'] ] }
+  ];
+
+  const $ = id => document.getElementById(id);
+  const intro = $('intro'), quiz = $('quiz'), result = $('result');
+  let i = 0, score = {}, locked = false;
+
+  function shuffle(a) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+  function show(el) { [intro, quiz, result].forEach(s => s.hidden = s !== el); el.classList.remove('in'); void el.offsetWidth; el.classList.add('in'); }
+
+  function start() {
+    i = 0; score = { wfh: 0, small: 0, big: 0, senior: 0 };
+    document.documentElement.style.removeProperty('--res');
+    show(quiz); render();
+  }
+  function render() {
+    const Q = QUESTIONS[i];
+    $('bar').style.width = (i / QUESTIONS.length * 100) + '%';
+    $('count').textContent = 'Spørgsmål ' + (i + 1) + ' af ' + QUESTIONS.length;
+    $('q').textContent = Q.q;
+    const box = $('opts'); box.innerHTML = '';
+    shuffle(Q.o).forEach(([e, t, k]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'opt';
+      b.innerHTML = '<span class="e" aria-hidden="true"></span><span></span>';
+      b.children[0].textContent = e; b.children[1].textContent = t;
+      b.addEventListener('click', () => answer(b, k));
+      box.appendChild(b);
+    });
+    locked = false;
+    const first = box.querySelector('.opt'); if (first && document.activeElement && document.activeElement.classList.contains('opt')) first.focus();
+  }
+  function answer(btn, k) {
+    if (locked) return; locked = true;
+    btn.classList.add('pick');
+    score[k]++;
+    setTimeout(() => {
+      i++;
+      if (i < QUESTIONS.length) { const c = quiz; c.classList.remove('in'); void c.offsetWidth; c.classList.add('in'); render(); }
+      else finish();
+    }, 260);
+  }
+
+  let current = null;
+  function finish() {
+    $('bar').style.width = '100%';
+    const top = Math.max(...Object.values(score));
+    const winners = Object.keys(score).filter(k => score[k] === top);
+    current = winners[Math.floor(Math.random() * winners.length)];
+    const R = RESULTS[current];
+    document.documentElement.style.setProperty('--res', R.color);
+    $('rEmo').textContent = R.emo;
+    $('rTitle').textContent = R.name;
+    $('rText').textContent = R.text;
+    $('layout').href = BASE + 'hvem-bor-her/?p=' + current;
+    const mix = $('mix'); mix.innerHTML = '';
+    Object.keys(RESULTS).sort((a, b) => score[b] - score[a]).forEach(k => {
+      const pct = Math.round(score[k] / QUESTIONS.length * 100);
+      const row = document.createElement('div');
+      row.innerHTML = '<span></span><span class="track"><span class="fill"></span></span><span></span>';
+      row.children[0].textContent = RESULTS[k].emo + ' ' + RESULTS[k].short;
+      row.querySelector('.fill').style.width = pct + '%';
+      row.querySelector('.fill').style.background = RESULTS[k].color;
+      row.children[2].textContent = pct + '%';
+      mix.appendChild(row);
+    });
+    $('toast').textContent = '';
+    show(result);
+    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+
+  async function share() {
+    const R = RESULTS[current];
+    const url = BASE + 'quiz/';
+    const text = 'Jeg er ' + R.name + ' ' + R.emo + ' Hvilken Venøgade-beboer er du?';
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Hvilken Venøgade-beboer er du?', text, url }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    try {
+      await navigator.clipboard.writeText(text + ' ' + url);
+      $('toast').textContent = 'Kopieret! Sæt det ind, hvor du vil dele det.';
+    } catch (e) {
+      $('toast').textContent = text + ' ' + url;
+    }
+  }
+
+  $('go').addEventListener('click', start);
+  $('again').addEventListener('click', start);
+  $('share').addEventListener('click', share);
+})();
+</script>
+</body>
+</html>

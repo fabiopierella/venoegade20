@@ -602,7 +602,9 @@ input[type=number] { width: 5.5em; }
 
   drawBase();
   orient();
-  loadPersona('wfh');
+  let start = 'wfh';
+  try { const q = new URLSearchParams(location.search).get('p'); if (q && P[q]) start = q; } catch (e) {}
+  loadPersona(start);
 })();
 </script>
 </body>
