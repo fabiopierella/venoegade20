@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Doom i stuen</title>
-<meta name="description" content="Stueetagen er fuld af dyr. Smæk edderkopperne med tøflen, sprøjt løverne ud på terrassen og få 100 dyr ud af Venøgade 20, st. th.">
-<meta property="og:title" content="Doom i stuen 🩴">
-<meta property="og:description" content="Smæk edderkopperne med tøflen, sprøjt løverne ud på terrassen og få 100 dyr ud af Venøgade 20, st. th.">
+<meta name="description" content="Stueetagen er fuld af dyr. Skyd edderkopperne med maskingeværet, sprøjt løverne ud på terrassen og få 100 dyr ud af Venøgade 20, st. th.">
+<meta property="og:title" content="Doom i stuen 🕷️">
+<meta property="og:description" content="Skyd edderkopperne med maskingeværet, sprøjt løverne ud på terrassen og få 100 dyr ud af Venøgade 20, st. th.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://fabiopierella.github.io/venoegade20/doom-i-stuen/preview.png">
 <meta property="og:url" content="https://fabiopierella.github.io/venoegade20/doom-i-stuen/">
@@ -133,9 +133,9 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
 <body>
 <main>
   <h1>Doom i stuen</h1>
-  <p class="intro">Stueetagen er fuld af dyr. <strong>Smæk</strong> edderkopperne med tøflen, <strong>sprøjt</strong> løverne ud på terrassen og få <strong>100 dyr</strong> ud af lejligheden. Banen er Venøgade 20, st. th. i rigtige mål.</p>
+  <p class="intro">Stueetagen er fuld af dyr. <strong>Skyd</strong> edderkopperne med maskingeværet, <strong>sprøjt</strong> løverne ud på terrassen og få <strong>100 dyr</strong> ud af lejligheden. Banen er Venøgade 20, st. th. i rigtige mål.</p>
 
-  <div class="stage" id="stage" tabindex="0" aria-label="Spillet. WASD for at gå, mus for at sigte, klik for at smække.">
+  <div class="stage" id="stage" tabindex="0" aria-label="Spillet. WASD for at gå, mus for at sigte, klik for at skyde.">
     <canvas id="c"></canvas>
     <div class="glow" id="glow"></div>
     <div class="hurt" id="hurt"></div>
@@ -148,12 +148,12 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
       <div class="stick" id="stick"><i id="knob"></i></div>
       <div class="hint" id="hint">← Gå her · Drej her →</div>
       <button type="button" id="wpnBtn" aria-label="Skift våben">🧴</button>
-      <button type="button" id="fireBtn" aria-label="Brug våben">SMÆK</button>
+      <button type="button" id="fireBtn" aria-label="Brug våben">SKYD</button>
     </div>
     <div class="bar">
       <div class="cell"><b id="hp">100</b><small>Kaffe ☕</small></div>
       <div class="face" id="face">😎</div>
-      <div class="cell"><b id="ammo">∞</b><small id="wname">Tøffel</small></div>
+      <div class="cell"><b id="ammo">∞</b><small id="wname">Maskingevær</small></div>
       <div class="cell"><b id="count">0/100</b><small>Dyr ude</small></div>
     </div>
     <div class="overlay" id="overlay">
@@ -167,7 +167,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   </div>
 
   <section class="win" id="win" hidden>
-    <h2>Stueetagen er sikret! 🩴</h2>
+    <h2>Stueetagen er sikret! 🏠</h2>
     <p id="winText">Alle 100 dyr er ude, og der er stadig kaffe på kanden. Spøg til side, her er hvad stueetagen på Venøgade 20 faktisk byder på:</p>
     <ul>
       <li>Egen terrasse direkte fra stuen (uden løver)</li>
@@ -443,21 +443,21 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
 
   // ---------- monsters, weapons, pickups ----------
   const MT = {
-    spider:   { e: '🕷️', name: 'Edderkoppen', hp: 1, spd: 150, h: 45, sep: 12, reach: 72, dmg: 5, cd: 0.9, small: true },
-    rat:      { e: '🐀', name: 'Rotten', hp: 2, spd: 185, h: 40, sep: 12, reach: 72, dmg: 7, cd: 1.0, small: true, flip: true },
+    spider:   { e: '🕷️', name: 'Edderkoppen', hp: 1, spd: 150, h: 45, sep: 12, reach: 92, dmg: 5, cd: 0.9, small: true },
+    rat:      { e: '🐀', name: 'Rotten', hp: 2, spd: 185, h: 40, sep: 12, reach: 92, dmg: 7, cd: 1.0, small: true, flip: true },
     fox:      { e: '🦊', name: 'Ræven', hp: 4, spd: 210, h: 70, sep: 18, reach: 58, dmg: 10, cd: 1.1 },
     lion:     { e: '🦁', name: 'Løven', hp: 7, spd: 200, h: 115, sep: 26, reach: 72, dmg: 15, cd: 1.2 },
     elephant: { e: '🐘', name: 'Elefanten', hp: 14, spd: 105, h: 190, sep: 38, reach: 95, dmg: 22, cd: 1.6, flip: true }
   };
   const WPN = [
-    { name: 'Tøffel', e: '🩴', btn: 'SMÆK', key: '1' },
+    { name: 'Maskingevær', e: '🔫', btn: 'SKYD', key: '1' },
     { name: 'Sprayflaske', e: '🧴', btn: 'SPRØJT', key: '2' },
     { name: 'Støvsuger', e: '🌀', btn: 'SUG', key: '3' }
   ];
   const PICK = { coffee: { e: '☕', h: 26 }, water: { e: '💧', h: 26 }, battery: { e: '🔋', h: 28 } };
 
   // ---------- render buffers ----------
-  let W = 320, H = 200, PROJ = 160, HOR = 100;
+  let W = 320, H = 200, PROJ = 160, HOR0 = 84, HOR = 84;
   let img, buf32, depth, zWall, SKY;
   const segD = new Float32Array(64), segU = new Float32Array(64), segT = new Uint8Array(64), segS = new Uint8Array(64), segZ = new Uint8Array(64);
   function resize() {
@@ -465,12 +465,12 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     if (!r.width || !r.height) return;
     H = r.height > 520 ? 240 : 200;
     W = clamp(Math.round(H * r.width / r.height), 110, 520);
-    cv.width = W; cv.height = H; HOR = Math.round(H * 0.42);
+    cv.width = W; cv.height = H; HOR0 = H * 0.42; HOR = Math.round(HOR0 - look * H);
     PROJ = Math.min((W / 2) / Math.tan(37.5 * Math.PI / 180), (H / 2) / Math.tan(34 * Math.PI / 180));
     img = ctx.createImageData(W, H); buf32 = new Uint32Array(img.data.buffer);
     depth = new Float32Array(W * H); zWall = new Float32Array(W);
-    SKY = new Uint32Array(H);
-    for (let y = 0; y < H; y++) { const c = lerpC(0x6fa9d8, 0xd2e8f4, clamp(y / HOR, 0, 1)); SKY[y] = 0xff000000 | ((c & 255) << 16) | (c & 0xff00) | ((c >> 16) & 255); }
+    SKY = new Uint32Array(256);
+    for (let k = 0; k < 256; k++) { const c = lerpC(0xd2e8f4, 0x6fa9d8, k / 255); SKY[k] = 0xff000000 | ((c & 255) << 16) | (c & 0xff00) | ((c >> 16) & 255); }
     mm = null;
     if (state !== 'play') draw();
   }
@@ -526,7 +526,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
       const yc = Math.min(H, Math.ceil(wTop - 0.5));
       for (let y = 0; y < yc; y++) {
         const rd = (CEIL - EYE) * PROJ / (HOR - y - 0.5), c = cellOf(P.x + rx * rd, P.y + ry * rd), i = y * W + x;
-        if (c < 0 || zone[c] === 2) buf32[i] = SKY[y];
+        if (c < 0 || zone[c] === 2) buf32[i] = SKY[Math.min(255, ((HOR - y) * 300 / H) | 0)];
         else { const v = (239 * fog(rd)) | 0; buf32[i] = 0xff000000 | ((v - 8) << 16) | ((v - 3) << 8) | v; }
         depth[i] = rd;
       }
@@ -627,7 +627,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     env(g, t, vol, dur); o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.05);
   }
   const SFX = {
-    slap: () => { noise(0.07, 3000, 900, 'highpass', 0.7, 0.7); tone('square', 180, 60, 0.06, 0.15); },
+    gun: () => { noise(0.06, 2200, 300, 'lowpass', 0.8, 0.5); tone('square', 130, 50, 0.05, 0.12); },
     swish: () => noise(0.16, 500, 2400, 'bandpass', 2, 0.18),
     spray: () => noise(0.11, 5000, 3200, 'bandpass', 1.2, 0.22),
     empty: () => tone('square', 900, 850, 0.04, 0.08),
@@ -657,8 +657,8 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   const P = { x: 700, y: 380, a: 0, r: 14, hp: 100 };
   let mons = [], picks = [], fx = [], drops = [];
   let done = 0, spawned = 0, spawnT = 0, pickT = 0, elapsed = 0, time = 0;
-  let wpn = 0, water = 50, battery = 0, hasVac = false, cdW = 0, swing = 0, firing = false, vacOn = false;
-  let hurtA = 0, glowA = 0, faceT = 0, faceE = '', msgT = 0, bob = 0, moveAmt = 0, shake = 0, lastPC = -1;
+  let wpn = 0, water = 20, battery = 0, hasVac = false, cdW = 0, swing = 0, firing = false, vacOn = false;
+  let muzzle = false, look = 0, hurtA = 0, glowA = 0, faceT = 0, faceE = '', msgT = 0, bob = 0, moveAmt = 0, shake = 0, lastPC = -1;
   let seen = {};
   let showMap = load('doom-i-stuen-kort', true);
   let best = load('doom-i-stuen-bedst', 0);
@@ -667,7 +667,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     Object.assign(P, { x: 700, y: 380, a: 0, hp: 100 });
     mons = []; picks = []; fx = []; drops = [];
     done = 0; spawned = 0; spawnT = 1.2; pickT = 6; elapsed = 0;
-    wpn = 0; water = 50; battery = 0; hasVac = false; cdW = 0; swing = 0; firing = false;
+    wpn = 0; water = 20; battery = 0; look = 0; hasVac = false; cdW = 0; swing = 0; firing = false;
     hurtA = 0; glowA = 0; faceT = 0; seen = {}; lastPC = -1;
     picks.push({ t: 'coffee', x: 1020, y: 330 }, { t: 'water', x: 450, y: 560 });
     updateHud(true);
@@ -726,7 +726,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   }
   function spawnPickup() {
     if (picks.length >= 4) return;
-    const need = [['coffee', (100 - P.hp) / 100 * 3 + 0.25], ['water', (80 - water) / 80 * 3 + 0.25], ['battery', hasVac ? (100 - battery) / 100 * 3 + 0.25 : 0]];
+    const need = [['coffee', (100 - P.hp) / 100 * 3 + 0.25], ['water', (40 - water) / 40 * 3 + 0.25], ['battery', hasVac ? (100 - battery) / 100 * 3 + 0.25 : 0]];
     let s = need.reduce((a, b) => a + b[1], 0) * Math.random(), t = 'coffee';
     for (const [k, v] of need) { if ((s -= v) < 0) { t = k; break; } }
     for (let tries = 0; tries < 40; tries++) {
@@ -776,34 +776,33 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     if (m.hp <= 0) scored(m, how);
     else if (!d.small) { if (m.t === 'fox') SFX.yelp(); else noise(0.15, 300, 120, 'lowpass', 1, 0.25); }
   }
-  function slap() {
-    cdW = 0.38; swing = 0.28;
+  function gun() {
+    cdW = 0.1; swing = 0.1; muzzle = !muzzle; SFX.gun(); glowA = Math.max(glowA, 0.12);
+    // vertical aim is automatic, like the original Doom
     let bestM = null, bd = 1e9;
     for (const m of mons) {
       if (m.state !== 'chase') continue;
       const c = cam(m);
-      if (c.dep > 0 && c.dep < 105 + MT[m.t].sep && Math.abs(c.lat) < c.dep * 0.85 + 22 && c.dep < bd) { bd = c.dep; bestM = m; }
-    }
-    if (!bestM) { SFX.swish(); return; }
-    SFX.slap();
-    const d = MT[bestM.t], ux = (bestM.x - P.x) / (bd || 1), uy = (bestM.y - P.y) / (bd || 1);
-    if (!d.small) once('slap-' + bestM.t, d.name + ' griner af tøflen. Prøv sprayflasken! 🧴', 2.4);
-    hit(bestM, d.small ? 2 : 1, ux * 35, uy * 35, 'slap');
-  }
-  function spray() {
-    if (water <= 0) { cdW = 0.35; SFX.empty(); once('dry', 'Sprayflasken er tom. Find 💧', 2); return; }
-    water--; cdW = 0.16; swing = 0.12; SFX.spray(); updateHud();
-    for (let i = 0; i < 5; i++) drops.push({ t: 0, life: 0.18 + Math.random() * 0.08, ox: (Math.random() - 0.5) * 0.06, oy: (Math.random() - 0.5) * 0.06 });
-    let bestM = null, bd = 1e9;
-    for (const m of mons) {
-      if (m.state !== 'chase') continue;
-      const c = cam(m);
-      if (c.vis && c.dep < 650 && Math.abs(c.lat) < halfW(m) * 0.85 + 10 && c.dep < bd) { bd = c.dep; bestM = m; }
+      if (c.vis && c.dep < 1500 && Math.abs(c.lat) < halfW(m) * 0.8 + 6 + c.dep * 0.02 && c.dep < bd) { bd = c.dep; bestM = m; }
     }
     if (!bestM) return;
     const ux = (bestM.x - P.x) / bd, uy = (bestM.y - P.y) / bd;
-    fx.push({ x: bestM.x - ux * 15, y: bestM.y - uy * 15, z: MT[bestM.t].h * 0.4, h: 30, e: '💦', life: 0.2 });
-    hit(bestM, 1, ux * 14, uy * 14, 'spray');
+    fx.push({ x: bestM.x - ux * 12, y: bestM.y - uy * 12, z: MT[bestM.t].h * (0.25 + Math.random() * 0.4), h: 16, e: '💥', life: 0.07 });
+    hit(bestM, 1, ux * 6, uy * 6, 'shot');
+  }
+  function spray() {
+    if (water <= 0) { cdW = 0.35; SFX.empty(); once('dry', 'Sprayflasken er tom. Find 💧', 2); return; }
+    water--; cdW = 0.55; swing = 0.2; SFX.spray(); updateHud();
+    for (let i = 0; i < 12; i++) drops.push({ t: 0, life: 0.18 + Math.random() * 0.1, ox: (Math.random() - 0.5) * 0.3, oy: (Math.random() - 0.5) * 0.18 });
+    // a wide splash: everything in the cone gets wet
+    for (const m of mons) {
+      if (m.state !== 'chase') continue;
+      const c = cam(m);
+      if (!c.vis || c.dep > 450 || Math.abs(c.lat) > c.dep * 0.16 + halfW(m) * 0.8 + 10) continue;
+      const ux = (m.x - P.x) / c.dep, uy = (m.y - P.y) / c.dep;
+      fx.push({ x: m.x - ux * 15, y: m.y - uy * 15, z: MT[m.t].h * 0.4, h: 30, e: '💦', life: 0.2 });
+      hit(m, 3, ux * 30, uy * 30, 'spray');
+    }
   }
   function vacuum(dt) {
     if (battery <= 0) { battery = 0; vacOn = false; once('flat', 'Støvsugeren er løbet tør. Find 🔋', 2); return; }
@@ -823,6 +822,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     if (state !== 'play') return;
     P.hp -= dmg; hurtA = Math.min(0.9, hurtA + 0.35 + dmg / 40); shake = reduce ? 0 : 0.18;
     face('😣', 0.45); SFX.hurt();
+    if (MT[m.t].small) once('ankle', document.body.classList.contains('tm') ? 'Av, anklen! Træk ned med højre tommel for at kigge ned 👇' : 'Av, anklen! Kig ned med musen 👇', 2.6);
     if (m.t === 'lion' && Math.random() < 0.5) SFX.roar();
     updateHud();
     if (P.hp <= 0) lose();
@@ -830,7 +830,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
 
   // ---------- update ----------
   const keys = {};
-  let lookDX = 0, stickX = 0, stickY = 0;
+  let lookDX = 0, lookDY = 0, stickX = 0, stickY = 0;
   function update(dt) {
     elapsed += dt;
     // player
@@ -839,6 +839,8 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     let str = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0) + stickX;
     const turn = (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0);
     P.a += turn * 2.6 * dt + lookDX; lookDX = 0;
+    look = clamp(look + lookDY, -0.35, 0.6); lookDY = 0;
+    HOR = Math.round(HOR0 - look * H);
     const len = Math.hypot(fwd, str);
     if (len > 1) { fwd /= len; str /= len; }
     const spd = 260 * dt;
@@ -853,7 +855,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     vacOn = false;
     if (firing && state === 'play') {
       if (wpn === 2) vacuum(dt);
-      else if (cdW <= 0) { if (wpn === 0) slap(); else spray(); }
+      else if (cdW <= 0) { if (wpn === 0) gun(); else spray(); }
     }
     vacuumSound(vacOn);
     if (wpn === 2) updateHud();
@@ -880,7 +882,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
         if (bestC >= 0) { tx = cellCX(bestC); ty = cellCY(bestC); } else { tx = m.state === 'flee' ? m.x + m.vx : P.x; ty = m.state === 'flee' ? m.y + m.vy : P.y; }
       }
       let dx = tx - m.x, dy = ty - m.y; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
-      if (m.t === 'spider' && m.state === 'chase') { const z = Math.sin(time * 7 + m.seed) * 0.7; const ndx = dx - dy * z, ndy = dy + dx * z; dx = ndx; dy = ndy; }
+      if (m.t === 'spider' && m.state === 'chase') { const z = Math.sin(time * 4 + m.seed) * 0.35; const ndx = dx - dy * z, ndy = dy + dx * z; dx = ndx; dy = ndy; }
       let sp = d.spd * (m.state === 'flee' ? 1.7 : 1) * (m.stun > 0 ? 0.25 : 1);
       if (m.state === 'chase' && dist < d.reach * 0.8) sp = 0;
       m.vx = dx * sp; m.vy = dy * sp;
@@ -911,7 +913,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     for (const p of picks) {
       if (Math.hypot(p.x - P.x, p.y - P.y) > 40) continue;
       if (p.t === 'coffee' && P.hp < 100) { P.hp = Math.min(100, P.hp + 25); p.got = true; msg('+25 kaffe ☕', 1); }
-      if (p.t === 'water' && water < 80) { water = Math.min(80, water + 25); p.got = true; msg('+25 vand 💧', 1); }
+      if (p.t === 'water' && water < 40) { water = Math.min(40, water + 10); p.got = true; msg('+10 vand 💧', 1); }
       if (p.t === 'battery' && battery < 100) { battery = Math.min(100, battery + 40); p.got = true; msg('+40 strøm 🔋', 1); }
       if (p.got) { SFX.pickup(); glowA = 0.6; updateHud(); }
     }
@@ -941,11 +943,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
         else { addSprite(m.x, m.y, 5, 45, m.how === 'spray' ? '💦' : '💥'); continue; }
       }
       if (m.state === 'flee') z = Math.abs(Math.sin(time * 14 + m.seed)) * d.h * 0.12;
-      else if (d.small) {
-        // small animals hop, and leap at you up close, so they stay in view
-        const near = Math.hypot(m.x - P.x, m.y - P.y) < 170;
-        z = (near ? 22 : 0) + Math.abs(Math.sin(time * (near ? 9 : 16) + m.seed)) * (near ? 38 : 5);
-      }
+      else if (d.small) z = Math.abs(Math.sin(time * 14 + m.seed)) * 3;
       const lateral = -m.vx * sa + m.vy * ca;
       addSprite(m.x, m.y, z, d.h, d.e, d.flip && lateral > 0, m.flash > 0, scale);
       if (m.state === 'flee') addSprite(m.x - m.vx * 0.12, m.y - m.vy * 0.12, 5, d.h * 0.35, '💨');
@@ -969,10 +967,33 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     const sh = shake > 0 ? (Math.random() - 0.5) * 4 : 0;
     const S = Math.min(H, W * 0.9);
     if (wpn === 0) {
-      const k = swing > 0 ? Math.sin((1 - swing / 0.28) * Math.PI) : 0;
-      emojiAt('🩴', W / 2 + S * 0.36 - k * S * 0.3 + bx + sh, H - S * 0.16 - k * S * 0.18 + by, S * 0.5, -0.5 - k * 1.1);
+      // machine gun, drawn in the style of Doom's chaingun
+      const k = swing > 0 ? swing / 0.1 : 0, gx = W / 2 + bx + sh, gy = H + by + k * S * 0.025;
+      const bw = S * 0.2, top = gy - S * 0.42;
+      if (k > 0.3) {
+        ctx.fillStyle = muzzle ? '#ffe27a' : '#ffb347';
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const a = i / 10 * Math.PI * 2 + (muzzle ? 0.3 : 0), rr = (i % 2 ? 0.045 : 0.1) * S;
+          ctx.lineTo(gx + Math.cos(a) * rr * 1.3, top - S * 0.02 + Math.sin(a) * rr);
+        }
+        ctx.fill();
+        ctx.fillStyle = '#fff6d0'; ctx.beginPath(); ctx.arc(gx, top - S * 0.02, S * 0.03, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = '#3a3f45'; ctx.fillRect(gx - bw / 2, top + S * 0.12, bw, S * 0.32);
+      const spin = (time * (firing ? 30 : 2)) % 1;
+      for (let i = 0; i < 3; i++) {
+        const x = gx - bw * 0.36 + i * bw * 0.27;
+        ctx.fillStyle = '#23272b'; ctx.fillRect(x, top, bw * 0.18, S * 0.16);
+        ctx.fillStyle = '#6b737b'; ctx.fillRect(x + bw * 0.04 + ((spin + i / 3) % 1) * bw * 0.08, top, bw * 0.04, S * 0.16);
+      }
+      ctx.fillStyle = '#23272b'; ctx.fillRect(gx - bw * 0.55, top + S * 0.1, bw * 1.1, S * 0.04);
+      ctx.fillStyle = '#56606a'; ctx.fillRect(gx - bw * 0.42, top + S * 0.2, bw * 0.84, S * 0.03);
+      ctx.fillStyle = '#d9a77c';
+      ctx.beginPath(); ctx.ellipse(gx - bw * 0.62, gy - S * 0.05, S * 0.07, S * 0.1, 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(gx + bw * 0.62, gy - S * 0.05, S * 0.07, S * 0.1, -0.3, 0, Math.PI * 2); ctx.fill();
     } else if (wpn === 1) {
-      const k = swing > 0 ? swing / 0.12 : 0;
+      const k = swing > 0 ? swing / 0.2 : 0;
       const nx = W / 2 + S * 0.22 + bx, ny = H - S * 0.3 + by;
       for (const d of drops) {
         const t = d.t / d.life;
@@ -1019,13 +1040,13 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   function showOverlay(title, sub, row) { ovTitle.textContent = title; ovSub.innerHTML = sub; ovRow.hidden = !row; overlay.hidden = false; }
   function controlsText() {
     return document.body.classList.contains('tm')
-      ? 'Venstre tommel går, højre tommel drejer, den røde knap smækker. Den lille knap skifter våben.'
-      : '<span class="keys">WASD: gå · Mus: sigt · Klik: smæk<br>1 2 3 eller Q E: skift våben · M: kort</span>';
+      ? 'Venstre tommel går. Højre tommel drejer og kigger op og ned. Den røde knap skyder, den lille skifter våben.'
+      : '<span class="keys">WASD: gå · Mus: sigt og kig op og ned · Klik: skyd<br>1 2 3 eller Q E: skift våben · M: kort</span>';
   }
   function titleScreen() {
     state = 'title';
     showOverlay(document.body.classList.contains('tm') ? 'Tryk for at starte' : 'Klik for at starte',
-      'Edderkopper og rotter får tøflen. Ræve, løver og elefanter jager du ud med sprayflasken.<br>' + controlsText());
+      'Edderkopper og rotter får maskingeværet. Ræve, løver og elefanter flygter ud, når de har fået nok.<br>' + controlsText());
   }
   function start() {
     initAudio();
@@ -1057,7 +1078,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     state = 'won'; firing = false; vacuumSound(false); SFX.fanfare(); endLayout();
     const t = elapsed, nb = !best || t < best;
     if (nb) { best = t; save('doom-i-stuen-bedst', Math.round(t)); }
-    showOverlay('Stueetagen er sikret! 🩴', `100 dyr ude på ${fmt(t)}. ${nb ? 'Ny rekord!' : 'Rekord: ' + fmt(best)}`);
+    showOverlay('Stueetagen er sikret! 🏠', `100 dyr ude på ${fmt(t)}. ${nb ? 'Ny rekord!' : 'Rekord: ' + fmt(best)}`);
     winText.textContent = `Alle 100 dyr er ude på ${fmt(t)}, og der er stadig kaffe på kanden. Spøg til side, her er hvad stueetagen på Venøgade 20 faktisk byder på:`;
     winEl.hidden = false;
     setTimeout(() => winEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 300);
@@ -1072,8 +1093,8 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && state === 'play' && !document.body.classList.contains('tm')) pause(); });
   document.addEventListener('mousemove', e => {
     if (state !== 'play') return;
-    if (document.pointerLockElement === stage) lookDX += e.movementX * 0.0026;
-    else if (noLock && (e.buttons & 1)) lookDX += e.movementX * 0.006;
+    if (document.pointerLockElement === stage) { lookDX += e.movementX * 0.0026; lookDY += e.movementY * 0.0014; }
+    else if (noLock && (e.buttons & 1)) { lookDX += e.movementX * 0.006; lookDY += e.movementY * 0.003; }
   });
   window.addEventListener('keydown', e => {
     if (state !== 'play') {
@@ -1122,7 +1143,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
 
   // ---------- input: touch ----------
   const stick = $('stick'), knob = $('knob'), fireBtn = $('fireBtn');
-  let stickId = null, lookId = null, sx0 = 0, sy0 = 0, lookX = 0;
+  let stickId = null, lookId = null, sx0 = 0, sy0 = 0, lookX = 0, lookY = 0;
   stage.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse') return;
     if (!document.body.classList.contains('tm')) { document.body.classList.add('tm'); }
@@ -1133,7 +1154,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
       stickId = e.pointerId; sx0 = e.clientX - r.left; sy0 = e.clientY - r.top;
       stick.style.left = sx0 + 'px'; stick.style.top = sy0 + 'px'; stick.style.display = 'block'; knob.style.transform = '';
       $('hint').style.display = 'none';
-    } else if (lookId === null) { lookId = e.pointerId; lookX = e.clientX; }
+    } else if (lookId === null) { lookId = e.pointerId; lookX = e.clientX; lookY = e.clientY; }
     try { stage.setPointerCapture(e.pointerId); } catch (err) {}
   });
   stage.addEventListener('pointermove', e => {
@@ -1145,8 +1166,8 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
       knob.style.transform = `translate(${dx}px, ${dy}px)`;
       stickX = dx / R; stickY = dy / R;
     } else if (e.pointerId === lookId) {
-      if (state === 'play') lookDX += (e.clientX - lookX) * 0.0075;
-      lookX = e.clientX;
+      if (state === 'play') { lookDX += (e.clientX - lookX) * 0.0075; lookDY += (e.clientY - lookY) * 0.0035; }
+      lookX = e.clientX; lookY = e.clientY;
     }
   });
   function endTouch(e) {
