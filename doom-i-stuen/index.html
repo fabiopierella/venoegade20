@@ -163,6 +163,10 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
         <button class="btn" type="button" id="resumeBtn">Fortsæt</button>
         <button class="btn ghost" type="button" id="quitBtn">Afslut</button>
       </div>
+      <div class="ovrow" id="endRow" hidden>
+        <button class="btn" type="button" id="replayBtn">Spil igen</button>
+        <a class="btn ghost" href="https://www.nybolig.dk/ejerlejlighed/2100/venoegade/n260336/n2603360001484" target="_blank" rel="noopener">Se lejligheden</a>
+      </div>
     </div>
   </div>
 
@@ -1037,7 +1041,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   if (coarse) document.body.classList.add('tm');
   function fmt(t) { t = Math.round(t); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); }
-  function showOverlay(title, sub, row) { ovTitle.textContent = title; ovSub.innerHTML = sub; ovRow.hidden = !row; overlay.hidden = false; }
+  function showOverlay(title, sub, row) { ovTitle.textContent = title; ovSub.innerHTML = sub; ovRow.hidden = row !== 'pause'; $('endRow').hidden = row !== 'end'; overlay.hidden = false; msgEl.style.opacity = 0; msgT = 0; }
   function controlsText() {
     return document.body.classList.contains('tm')
       ? 'Venstre tommel går. Højre tommel drejer og kigger op og ned. Den røde knap skyder, den lille skifter våben.'
@@ -1060,7 +1064,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   function pause() {
     if (state !== 'play') return;
     state = 'pause'; firing = false; vacuumSound(false); clearKeys();
-    showOverlay('Pause', document.body.classList.contains('tm') ? '' : 'Klik for at fortsætte.', document.body.classList.contains('tm'));
+    showOverlay('Pause', document.body.classList.contains('tm') ? '' : 'Klik for at fortsætte.', document.body.classList.contains('tm') ? 'pause' : '');
   }
   function resume() {
     if (state !== 'pause') return;
@@ -1071,14 +1075,14 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   function quit() { state = 'title'; endLayout(); titleScreen(); }
   function lose() {
     state = 'dead'; firing = false; vacuumSound(false); face('😵', 99); updateHud(true); endLayout();
-    showOverlay('Kaffen slap op ☕', `Du fik ${done} af ${GOAL} dyr ud. ${done >= 50 ? 'Tæt på!' : 'Dyrene vandt denne gang.'}<br>${document.body.classList.contains('tm') ? 'Tryk' : 'Klik'} for at prøve igen.`);
+    showOverlay('Kaffen slap op ☕', `Du fik ${done} af ${GOAL} dyr ud. ${done >= 50 ? 'Tæt på!' : 'Dyrene vandt denne gang.'}`, 'end');
   }
   function win() {
     if (state !== 'play') return;
     state = 'won'; firing = false; vacuumSound(false); SFX.fanfare(); endLayout();
     const t = elapsed, nb = !best || t < best;
     if (nb) { best = t; save('doom-i-stuen-bedst', Math.round(t)); }
-    showOverlay('Stueetagen er sikret! 🏠', `100 dyr ude på ${fmt(t)}. ${nb ? 'Ny rekord!' : 'Rekord: ' + fmt(best)}`);
+    showOverlay('Stueetagen er sikret! 🏠', `100 dyr ude på ${fmt(t)}. ${nb ? 'Ny rekord!' : 'Rekord: ' + fmt(best)}`, 'end');
     winText.textContent = `Alle 100 dyr er ude på ${fmt(t)}, og der er stadig kaffe på kanden. Spøg til side, her er hvad stueetagen på Venøgade 20 faktisk byder på:`;
     winEl.hidden = false;
     setTimeout(() => winEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }), 300);
@@ -1121,7 +1125,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
     else if (state === 'pause' && !document.body.classList.contains('tm')) resume();
   }
   stage.addEventListener('mousedown', e => {
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button, a')) return;
     if (document.body.classList.contains('tm')) return;
     if (state !== 'play') { primary(); return; }
     if (document.pointerLockElement !== stage && !noLock) { lockPointer(); return; }
@@ -1130,6 +1134,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   window.addEventListener('mouseup', e => { if (e.button === 0 && !document.body.classList.contains('tm')) firing = false; });
   $('again').addEventListener('click', () => { start(); stage.scrollIntoView({ block: 'center' }); });
   $('resumeBtn').addEventListener('click', resume);
+  $('replayBtn').addEventListener('click', start);
   $('quitBtn').addEventListener('click', quit);
   $('pauseBtn').addEventListener('click', pause);
   const sndBtn = $('sndBtn');
@@ -1147,7 +1152,7 @@ body.fs .stage { position: fixed; inset: 0; width: 100%; height: 100%; max-heigh
   stage.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse') return;
     if (!document.body.classList.contains('tm')) { document.body.classList.add('tm'); }
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button, a')) return;
     if (state !== 'play') { if (state !== 'pause') primary(); return; }
     const r = stage.getBoundingClientRect();
     if (e.clientX - r.left < r.width * 0.45 && stickId === null) {
